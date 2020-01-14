@@ -2,7 +2,25 @@
 http://ionicframework.com/docs/theming/ */
 
 /** Ionic CSS Variables **/
+
+.ion-color-stravaorange {
+  --ion-color-base: var(--ion-color-stravaorange);
+  --ion-color-base-rgb: var(--ion-color-stravaorange-rgb);
+  --ion-color-contrast: var(--ion-color-stravaorange-contrast);
+  --ion-color-contrast-rgb: var(--ion-color-stravaorange-contrast-rgb);
+  --ion-color-shade: var(--ion-color-stravaorange-shade);
+  --ion-color-tint: var(--ion-color-stravaorange-tint);
+}
+
+
 :root {
+  /** stravaorange **/
+  --ion-color-stravaorange: #fc4c02;
+  --ion-color-stravaorange-rgb: 252,76,2;
+  --ion-color-stravaorange-contrast: #ffffff;
+  --ion-color-stravaorange-contrast-rgb: 255,255,255;
+  --ion-color-stravaorange-shade: #de4302;
+  --ion-color-stravaorange-tint: #fc5e1b;
   /** primary **/
   --ion-color-primary: #3880ff;
   --ion-color-primary-rgb: 56, 128, 255;
