@@ -1,5 +1,7 @@
 {
   "name": "stravaStats",
-  "integrations": {},
+  "integrations": {
+    "capacitor": {}
+  },
   "type": "react"
 }

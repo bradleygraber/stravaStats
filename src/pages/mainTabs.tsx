@@ -2,9 +2,10 @@ import { IonTabs, IonTabBar, IonIcon, IonLabel, IonTabButton, IonRouterOutlet } 
 import React from 'react';
 import { flash } from 'ionicons/icons';
 import { Route, Redirect } from 'react-router';
-import Ride from './Ride'
+import Ride from './Ride';
+import { StateProps } from '../data/state'
 
-const MainTabs: React.FC = () => {
+const MainTabs: React.FC<StateProps> = () => {
   return (
       <IonTabs>
         <IonRouterOutlet>
