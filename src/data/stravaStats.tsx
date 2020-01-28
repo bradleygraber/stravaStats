@@ -130,7 +130,91 @@ export const refreshAccessToken = async (accessInfo: any) => {
   });
 }
 
+export const processActivities = async (activities: any, state: any, startFrom?: number) => {
+  var start = startFrom === undefined ? 0 : startFrom;
 
+  var i = start;
+  for (; i < activities.length && i < start+200; i++) {
+    try {
+//      this.addActivity(activities[i], state);
+    }
+    catch (e) {
+      console.log(e);
+    }
+  }
+  if (i === activities.length) {
+    state.percentComplete.set(100);
+//    this.calcAverages();
+//    this.sort();
+    let localTypes:any[] = [];
+    for (var type in state.totals.get()) {
+      localTypes.push(type);
+    }
+    state.types.set(localTypes.slice());
+    return new Promise(resolve => {
+      resolve(localTypes);
+    });
+  }
+  else {
+    state.percentComplete.set((i / activities.length * 100).toFixed(0));
+    return new Promise(resolve => {
+      setTimeout(() => {
+        resolve(processActivities(activities, state, i));
+      }, 1000);
+    })
+  }
+}
+
+/**
+function addActivity (a, state) {
+  let totals = state.totals.get();
+
+  if (!totals[type])
+    totals[type] = { };
+
+  if (a.start_latlng) {
+    let point = { lat: a.start_latlng[0], lng: a.start_latlng[1] };
+//    var stateName = this.whichState.is(point);
+    var stateName = "Arizona";
+  }
+  else {
+    var stateName = "Unknown";
+  }
+  var stateNum = 0;
+  for (let i = 0; i < stateName.length; i++) {
+    stateNum += (stateName.charCodeAt(i));
+  }
+  let date = new Date(a.start_date_local);
+  let year = date.getFullYear();
+
+  for (var iter in this.thingsToTrackBy) {
+    var by = this.thingsToTrackBy[iter];
+    if (by == "ByState")
+      var info = { name: stateName, iter: stateNum };
+    if (by == "ByYear")
+      var info = { name: year, iter: year };
+    for (var stat in this.statsToTrack) {
+      let stravaName = this.statsToTrack[stat];
+      let t = this.totals[a.type];
+      let all = this.totals.all;
+
+      let statBy = stat + by;
+      if (!t[statBy])
+        t[statBy] = [];
+      if (!all[statBy])
+        all[statBy] = [];
+
+      let taStat = [ t[statBy], all[statBy] ];
+
+      taStat.forEach(function (stats) {
+        if (!stats[info.iter])
+          stats[info.iter] = { name: info.name, value: 0, count: 0 };
+        stats[info.iter].value += a[stravaName];
+        stats[info.iter].count++;
+      });
+    }
+  }
+}
 
 /**
 $.post(url, data, function (data) {
@@ -252,36 +336,6 @@ define (function (require) {
       console.log("done");
     }
     async processActivites(activities, startFrom) {
-      var start = startFrom === undefined ? 0 : startFrom;
-
-      let i = start;
-      for (; i < activities.length && i < start+200; i++) {
-        try {
-          this.addActivity(activities[i]);
-        }
-        catch (e) {
-          console.log(e);
-        }
-      }
-      if (i == activities.length) {
-        this.calcAverages();
-        this.sort();
-        let types = [];
-        for (var type in this.totals) {
-          types.push(type);
-        }
-        return new Promise(resolve => {
-          resolve(types);
-        });
-      }
-      else {
-        $("#spinnerNum").html(`Processing Activities: ${(i / this.activities.length * 100).toFixed(0)}%`)
-        return new Promise(resolve => {
-          setTimeout(() => {
-            resolve(this.processActivites(activities, i));
-          }, 0);
-        })
-      }
     }
     calcAverages() {
       for (var type in this.totals) {
@@ -315,53 +369,8 @@ define (function (require) {
       }
     }
     addActivity(a) {
-      this.initializeType(a.type);
-      if (a.start_latlng) {
-        let point = { lat: a.start_latlng[0], lng: a.start_latlng[1] };
-        var stateName = this.whichState.is(point);
-      }
-      else {
-        var stateName = "Unknown";
-      }
-      var stateNum = 0;
-      for (let i = 0; i < stateName.length; i++) {
-        stateNum += (stateName.charCodeAt(i));
-      }
-      let date = new Date(a.start_date_local);
-      let year = date.getFullYear();
-
-      for (var iter in this.thingsToTrackBy) {
-        var by = this.thingsToTrackBy[iter];
-        if (by == "ByState")
-          var info = { name: stateName, iter: stateNum };
-        if (by == "ByYear")
-          var info = { name: year, iter: year };
-        for (var stat in this.statsToTrack) {
-          let stravaName = this.statsToTrack[stat];
-          let t = this.totals[a.type];
-          let all = this.totals.all;
-
-          let statBy = stat + by;
-          if (!t[statBy])
-            t[statBy] = [];
-          if (!all[statBy])
-            all[statBy] = [];
-
-          let taStat = [ t[statBy], all[statBy] ];
-
-          taStat.forEach(function (stats) {
-            if (!stats[info.iter])
-              stats[info.iter] = { name: info.name, value: 0, count: 0 };
-            stats[info.iter].value += a[stravaName];
-            stats[info.iter].count++;
-          });
-        }
-      }
     }
     initializeType(type) {
-      if (this.totals[type])
-        return;
-      this.totals[type] = { };
     }
 
     //HTML Functions
