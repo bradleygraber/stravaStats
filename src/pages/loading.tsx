@@ -13,6 +13,7 @@ const Loading: React.FC<StateProps> = ({activities}) => {
 
 
   useEffect(() => {
+    loadingElement.id = "loadingElement"
     document.body.appendChild(loadingElement);
     // eslint-disable-next-line
   }, []);

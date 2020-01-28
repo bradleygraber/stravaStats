@@ -5,6 +5,7 @@ import { IonReactRouter } from '@ionic/react-router';
 
 import Login from './pages/login';
 import MainTabs from './pages/mainTabs';
+import Loading from './pages/loading';
 
 import { StateProps, updateStateFromStorage, saveStateToStorage } from './data/state'
 
@@ -81,6 +82,9 @@ const App: React.FC = () => {
 
   useEffect(() => {
     if (finishedLoadingActivities) {
+      let remove = document.getElementById("loadingElement");
+      if (remove)
+        document.body.removeChild(remove);
       console.log("Finished loading activities");
     }
   }, [finishedLoadingActivities])
@@ -93,8 +97,12 @@ const App: React.FC = () => {
           <Route path="/" render={props => {
             if (accessInfo === "" && code === "")
               return <Login {...props} {...state} />;
-            else if (accessInfo !== "" && accessInfo !== "loading")
-              return <MainTabs {...props} {...state} />;
+            else if (accessInfo !== "" && accessInfo !== "loading") {
+              if (finishedLoadingActivities)
+                return <MainTabs {...props} {...state} />;
+              else
+                return <Loading {...props} {...state}/>;
+            }
             else {
               console.log("empty page");
               return <IonPage></IonPage>;

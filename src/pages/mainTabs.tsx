@@ -3,7 +3,6 @@ import React from 'react';
 import { flash } from 'ionicons/icons';
 import { Route } from 'react-router';
 import Ride from './Ride';
-import Loading from './loading';
 import { StateProps } from '../data/state';
 
 const MainTabs: React.FC<StateProps> = (state) => {
@@ -13,7 +12,7 @@ const MainTabs: React.FC<StateProps> = (state) => {
       <IonTabs>
         <IonRouterOutlet>
           <Route path="/" render={props => {
-              return true ? <Loading {...props} {...state}/> : <Ride {...props} />;
+              return <Ride {...props} />;
           }}/>
         </IonRouterOutlet>
         <IonTabBar slot="bottom">
