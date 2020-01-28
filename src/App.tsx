@@ -1,13 +1,16 @@
 import React, { useState, useEffect } from 'react';
-import { Route, Redirect } from 'react-router-dom';
-import { IonApp, IonRouterOutlet } from '@ionic/react';
+import { Route } from 'react-router-dom';
+import { IonApp, IonRouterOutlet, IonPage } from '@ionic/react';
 import { IonReactRouter } from '@ionic/react-router';
 
 import Login from './pages/login';
 import MainTabs from './pages/mainTabs';
 
+import { StateProps, updateStateFromStorage, saveStateToStorage } from './data/state'
+
 import { getUrlParameter } from './util/util';
-import { getAccessToken } from './data/stravaStats';
+import { getAccessToken, getActivities } from './data/stravaStats';
+
 
 /* Core CSS required for Ionic components to work properly */
 import '@ionic/react/css/core.css';
@@ -28,47 +31,74 @@ import '@ionic/react/css/display.css';
 /* Theme variables */
 import './theme/variables.css';
 
-import { getSavedState, StateProps } from './data/state'
-
-import { Plugins } from '@capacitor/core';
-const { Storage } = Plugins;
-
-interface StringIter {
-  [index: string]: any,
-}
-
 
 const App: React.FC = () => {
-  let [loggedIn, setLoggedIn] = useState(false)
-  let [accessInfo, setAccessInfo] = useState("");
+  console.log("rendering");
+  let [code, setCode] = useState("loading");
+  let [accessInfo, setAccessInfo] = useState("loading");
+  let arr: any[] = ["loading"];
+  let [activities, setActivities] = useState(arr);
+  let [finishedLoadingActivities, setFinishedLoadingActivities] = useState(false);
 
   let state:StateProps = {
-    loggedIn: { get: ()=>loggedIn, set: setLoggedIn },
-    accessInfo: { get: ()=>accessInfo, set: setAccessInfo }
+    code: { get: ()=>code, set: setCode },
+    accessInfo: { get: ()=>accessInfo.slice(), set: setAccessInfo },
+    activities: { get: ()=>activities.slice(), set: setActivities }
   };
 
 
   useEffect(() => {
-    console.log("saving state");
-    let stateValues:StringIter = {};
-    for (let key in state) {
-      stateValues[key] = state[key].get();
-    };
-    Storage.set({key: "stravaStatsState", value: JSON.stringify(stateValues)});
-  });
+    console.log("loading State");
+    let getCode = getUrlParameter("code");
+    getCode = getCode === undefined? "" : getCode;
+    setCode(getCode);
+    updateStateFromStorage(state);
+    // eslint-disable-next-line
+  }, []);
 
-  let code = getUrlParameter("code");
-  if (code !== undefined) {
-    getAccessToken(code, state);
-  }
+  useEffect(() => {
+    if (code !== "" && code !== "loading" && accessInfo === "") {
+      getAccessToken(code, setCode, setAccessInfo);
+    }
+  }, [code, accessInfo]);
+
+  useEffect(() => {
+    console.log("saving state");
+    saveStateToStorage(state);
+  }, [state]);
+
+  useEffect(() => {
+    let mod = activities.length%200;
+    let after = activities.length > 1 ? new Date(activities[0].start_date).getTime()/1000 : undefined;
+    if (mod === 0 && accessInfo !== "" && finishedLoadingActivities === false) {
+      getActivities(state.activities, accessInfo, setFinishedLoadingActivities, after);
+    }
+    else if (activities.length > 1 && mod !== 0) {
+      setFinishedLoadingActivities(true);
+    }
+  // eslint-disable-next-line
+  }, [activities, accessInfo, finishedLoadingActivities]);
+
+  useEffect(() => {
+    if (finishedLoadingActivities) {
+      console.log("Finished loading activities");
+    }
+  }, [finishedLoadingActivities])
+
 
   return (
   <IonApp>
     <IonReactRouter>
         <IonRouterOutlet>
-          <Redirect path="/auth" to="/" />
           <Route path="/" render={props => {
-              return false ? <MainTabs {...props} {...state} /> : <Login {...props} {...state} />;
+            if (accessInfo === "" && code === "")
+              return <Login {...props} {...state} />;
+            else if (accessInfo !== "" && accessInfo !== "loading")
+              return <MainTabs {...props} {...state} />;
+            else {
+              console.log("empty page");
+              return <IonPage></IonPage>;
+            }
           }}/>
         </IonRouterOutlet>
     </IonReactRouter>

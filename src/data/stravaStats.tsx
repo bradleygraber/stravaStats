@@ -1,6 +1,10 @@
-import { StateProps } from './state'
+import { Dispatch, SetStateAction } from 'react';
+interface StringIter {
+  [index: string]: any,
+}
 
-export const  getAccessToken = async (code: string, state: StateProps ) => {
+export const  getAccessToken = async (code: string, setCode: Dispatch<SetStateAction<string>>, setAccessInfo: Dispatch<SetStateAction<string>> ) => {
+  console.log("getting access token");
   var url = "https://www.strava.com/oauth/token";
   var data = {
     "client_id": "41457",
@@ -19,15 +23,113 @@ export const  getAccessToken = async (code: string, state: StateProps ) => {
   .then((json) => {
     if (json.status === 200)
       return json.json();
+    else {
+      setCode("");
+      window.history.pushState("", "", '/');
+    }
   })
   .then((data) => {
     if (!data)
       return;
     console.log(data);
-    state.accessInfo.set(JSON.stringify(data));
+    setAccessInfo(JSON.stringify(data));
+    window.history.pushState("", "", '/');
+  });
+}
+
+export const getActivities = async (activities: any, accessInfo: any, setFinishedLoadingActivities: any, after?: number, ) => {
+  console.log("getting Activities");
+  await refreshAccessToken(accessInfo);
+  let accessInfoObj = JSON.parse(accessInfo);
+  let localActivities = activities.get();
+
+  let token = accessInfoObj.access_token;
+  var url = "https://www.strava.com/api/v3/athlete/activities";
+  var queryData:StringIter = {
+    "access_token": `${token}`,
+    "page": 1,
+    "per_page": 200,
+    "after": after
+  };
+  let paramsString = new URLSearchParams();
+  for (let key in queryData) {
+    paramsString.append(key, queryData[key]);
+  }
+
+  fetch(url + "?" + paramsString.toString())
+  .then((json) => {
+    if (json.status === 200)
+      return json.json();
+    else {
+      console.log("failed to retrieve activities");
+      console.log(json);
+    }
+  })
+  .then((data) => {
+    localActivities = localActivities.concat(data);
+    localActivities.sort(function (b: any, a: any) {
+      return new Date(a.start_date).getTime() - new Date(b.start_date).getTime();
+    });
+    if (data.length === 0) {
+      setFinishedLoadingActivities(true);
+      console.log("finished downloading activities");
+      return
+    }
+    activities.set(localActivities);
   });
 
+
+
+/**
+
+  return await $.get(url, queryData, (data) => {
+  })
+  .fail((e) => {
+    this.finishedGettingActivities = true;
+    if (e.responseJSON.message == "Authorization Error") {
+      console.log("Auth error");
+      this.clearData();
+    }
+    console.log(e.responseText);
+  })
+  **/
 }
+
+export const refreshAccessToken = async (accessInfo: any) => {
+  let accessInfoObj = JSON.parse(accessInfo);
+
+  let expireDate = new Date(accessInfoObj.expires_at*1000);
+  if (expireDate>new Date())
+    return;
+
+  var url = "https://www.strava.com/oauth/token";
+  var data = {
+    "client_id": "41457",
+    "client_secret": "e28ef93238546fb930bdf561ce8aabe5670eee13",
+    "refresh_token": accessInfoObj.refresh_token,
+    "grant_type": "refresh_token"
+  };
+  var options = {
+    method: 'post',
+    headers: {
+      "Content-type": "application/json; charset=UTF-8"
+    },
+    body: JSON.stringify(data)
+  }
+  fetch(url, options)
+  .then((json) => {
+    return json.json();
+  })
+  .then((data) => {
+    if (!data || data.message !== "success") {
+      console.log(data);
+      return;
+    }
+    accessInfo.set(JSON.stringify(data));
+    console.log("refreshAccessToken success");
+  });
+}
+
 
 
 /**
@@ -448,42 +550,6 @@ define (function (require) {
 
     // API functions
     async getActivities(page, after) {
-      await this.refreshAccessToken();
-      let token = this.loginData.access_token;
-      var url = "https://www.strava.com/api/v3/athlete/activities";
-      var queryData = {
-        "access_token": `${token}`,
-        "page": page,
-        "per_page": 200,
-      };
-      if (after)
-        queryData.after = after;
-
-      return await $.get(url, queryData, (data) => {
-        if (!this.activities)
-          this.activities = [];
-        this.activities = this.activities.concat(data);
-        if (data.length == 200) {
-          this.finishedGettingActivities = false;
-          $("#spinnerNum").html(`Activities Downloaded: ${page * 200}`);
-        }
-        else {
-          this.activities.sort(function (b, a) {
-            return new Date(a.start_date) - new Date(b.start_date);
-          });
-          this.finishedGettingActivities = true;
-          localStorage.setItem("activities", JSON.stringify(this.activities));
-          console.log("finished downloading activities");
-        }
-      })
-      .fail((e) => {
-        this.finishedGettingActivities = true;
-        if (e.responseJSON.message == "Authorization Error") {
-          console.log("Auth error");
-          this.clearData();
-        }
-        console.log(e.responseText);
-      })
     }
     async refreshActivities() {
       await this.refreshAccessToken();
@@ -493,31 +559,6 @@ define (function (require) {
     }
     getAccessToken(code) {
 
-    }
-    async refreshAccessToken() {
-      let expireDate = new Date(this.loginData.expires_at*1000);
-      if (expireDate>new Date())
-        return;
-
-      var url = "https://www.strava.com/oauth/token";
-      var data = {
-        "client_id": "41457",
-        "client_secret": "e28ef93238546fb930bdf561ce8aabe5670eee13",
-        "refresh_token": this.loginData.refresh_token,
-        "grant_type": "refresh_token"
-      };
-      return await $.post(url, data, (data) => {
-        localStorage.setItem("loginData", JSON.stringify(data));
-        this.loginData = data;
-        console.log("refreshAccessToken success");
-      })
-      .fail(function (e) {
-        console.log("refreshAccessToken failed: " + e.responseText);
-        if (e.responseJSON.message == "Authorization Error") {
-          console.log("Auth error");
-          this.clearData();
-        }
-      });
     }
   }
   return StravaStats;

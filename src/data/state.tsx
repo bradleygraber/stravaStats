@@ -2,15 +2,31 @@ import { Plugins } from '@capacitor/core';
 const { Storage } = Plugins;
 
 
-export const getSavedState = async () => {
-  const response = await Storage.get({ key: 'stravaStatsState' })
-  return response;
+export const updateStateFromStorage = async (state: StateProps) => {
+  const savedStateString = await Storage.get({ key: 'stravaStatsState' })
+  let safeString = savedStateString.value === null ? '{"accessInfo":"","activities":[]}' : savedStateString.value;
+  let savedStateObj:StringIter = JSON.parse(safeString);
+  for (let key in savedStateObj) {
+    if (key !== "code")
+      state[key].set(savedStateObj[key]);
+  }
+}
+export const saveStateToStorage = (state: StateProps) => {
+  let stateValues:StringIter = {};
+  for (let key in state) {
+    stateValues[key] = state[key].get();
+  };
+  Storage.set({key: "stravaStatsState", value: JSON.stringify(stateValues)});
 }
 
 export interface StateProps {
   [index: string]: any,
-  loggedIn: { get: () => boolean, set: (loggedIn: boolean) => void },
-  accessInfo: { get: () => string, set: (accessInfo: string) => void }
+  code: { get: () => string, set: (code: string) => void },
+  accessInfo: { get: () => string, set: (accessInfo: string) => void },
+  activities: { get: () => any[], set: (activities: any[]) => void },
+}
+interface StringIter {
+  [index: string]: any,
 }
 
 
