@@ -5,12 +5,11 @@ import { IonReactRouter } from '@ionic/react-router';
 
 import Login from './pages/login';
 import MainTabs from './pages/mainTabs';
-import Loading from './pages/loading';
 
-import { StateProps, updateStateFromStorage, saveStateToStorage } from './data/state'
+import { StateProps } from './data/state'
 
 import { getUrlParameter } from './util/util';
-import { getAccessToken, getActivities } from './data/stravaStats';
+import StravaStats from './data/stravaStats';
 
 
 /* Core CSS required for Ionic components to work properly */
@@ -35,39 +34,62 @@ import './theme/variables.css';
 
 const App: React.FC = () => {
   console.log("rendering");
-  let [code, setCode] = useState("loading");
-  let [accessInfo, setAccessInfo] = useState("loading");
-  let arr: any[] = ["loading"];
-  let [activities, setActivities] = useState(arr);
+  let [loggedIn, setLoggedIn] = useState("loading");
   let [finishedLoadingActivities, setFinishedLoadingActivities] = useState(false);
+  let [loadingNumber, setLoadingNumber] = useState(-1);
+  let loadingElement = useState(document.createElement('ion-loading'))[0];
+  loadingElement.id = "loadingElement";
+
+  // eslint-disable-next-line
+  let [stravaStats, setStravaStats] = useState(new StravaStats(setLoggedIn, setFinishedLoadingActivities, setLoadingNumber, getUrlParameter("code")));
 
   let state:StateProps = {
-    code: { get: ()=>code, set: setCode },
-    accessInfo: { get: ()=>accessInfo.slice(), set: setAccessInfo },
-    activities: { get: ()=>activities.slice(), set: setActivities }
+//    stravaStats: { get: ()=>stravaStats }
   };
 
 
   useEffect(() => {
-    console.log("loading State");
-    let getCode = getUrlParameter("code");
-    getCode = getCode === undefined? "" : getCode;
-    setCode(getCode);
-    updateStateFromStorage(state);
+//    updateStateFromStorage(state);
     // eslint-disable-next-line
   }, []);
 
   useEffect(() => {
-    if (code !== "" && code !== "loading" && accessInfo === "") {
-      getAccessToken(code, setCode, setAccessInfo);
+    console.log("logged in=" + loggedIn);
+    if (loggedIn === "true") {
+      document.body.appendChild(loadingElement);
+      setLoadingNumber(0);
+      stravaStats.getActivities();
     }
-  }, [code, accessInfo]);
+  }, [loggedIn, stravaStats, loadingElement]);
 
+  useEffect(() => {
+    if (loadingNumber >= 0 && !finishedLoadingActivities) {
+      let message = `Loading Activities: ${loadingNumber} loaded`
+      loadingElement.message = message;
+      loadingElement.present();
+    }
+    else if (loadingNumber >=0 && finishedLoadingActivities) {
+      let message = `Processing Activities: ${loadingNumber}%`
+      loadingElement.message = message;
+      loadingElement.present();
+    }
+  }, [loadingNumber, loadingElement, finishedLoadingActivities]);
+
+  useEffect(() => {
+    console.log("finishedLoading: " + finishedLoadingActivities);
+    if (finishedLoadingActivities) {
+      stravaStats.processActivities();
+    }
+  }, [finishedLoadingActivities, stravaStats]);
+
+/**
   useEffect(() => {
     console.log("saving state");
     saveStateToStorage(state);
   }, [state]);
+**/
 
+/**
   useEffect(() => {
     let mod = activities.length%200;
     let after = activities.length > 1 ? new Date(activities[0].start_date).getTime()/1000 : undefined;
@@ -79,7 +101,9 @@ const App: React.FC = () => {
     }
   // eslint-disable-next-line
   }, [activities, accessInfo, finishedLoadingActivities]);
+**/
 
+/**
   useEffect(() => {
     if (finishedLoadingActivities) {
       let remove = document.getElementById("loadingElement");
@@ -88,20 +112,17 @@ const App: React.FC = () => {
       console.log("Finished loading activities");
     }
   }, [finishedLoadingActivities])
-
-
+**/
   return (
   <IonApp>
     <IonReactRouter>
         <IonRouterOutlet>
           <Route path="/" render={props => {
-            if (accessInfo === "" && code === "")
+            if (loggedIn === "false")
               return <Login {...props} {...state} />;
-            else if (accessInfo !== "" && accessInfo !== "loading") {
+            else if (loggedIn === "true") {
               if (finishedLoadingActivities)
                 return <MainTabs {...props} {...state} />;
-              else
-                return <Loading {...props} {...state}/>;
             }
             else {
               console.log("empty page");

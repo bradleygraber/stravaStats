@@ -4,12 +4,12 @@ import { flash } from 'ionicons/icons';
 import { Route } from 'react-router';
 import Ride from './Ride';
 import { StateProps } from '../data/state';
-import { processActivities } from '../data/stravaStats'
 
 const MainTabs: React.FC<StateProps> = ({activities}) => {
 
   let loadingElement = useState(document.createElement('ion-loading'))[0];
 
+  /**
   let [ getPercentComplete, setPercentComplete ] = useState(0);
   let [ getTypes, setTypes ] = useState([]);
   let [ getTotals, setTotals ] = useState({ "all": { } });
@@ -29,14 +29,16 @@ const MainTabs: React.FC<StateProps> = ({activities}) => {
       "ByYear"
     ],
   }
+**/
 
   useEffect(() => {
     loadingElement.id = "loadingElement"
     document.body.appendChild(loadingElement);
-    processActivities(activities.get(), processActivitiesState);
+//    processActivities(activities.get(), processActivitiesState);
     // eslint-disable-next-line
   }, []);
 
+/**
   useEffect(() => {
     let message = `Processing Activities: ${getPercentComplete}%`
     loadingElement.message = message;
@@ -47,7 +49,7 @@ const MainTabs: React.FC<StateProps> = ({activities}) => {
         document.body.removeChild(remove);
     }
   }, [getPercentComplete, loadingElement]);
-
+**/
 
   return (
       <IonTabs>
