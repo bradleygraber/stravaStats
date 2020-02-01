@@ -33,18 +33,19 @@ import './theme/variables.css';
 
 
 const App: React.FC = () => {
-  console.log("rendering");
+//  console.log("rendering");
   let [loggedIn, setLoggedIn] = useState("loading");
-  let [finishedLoadingActivities, setFinishedLoadingActivities] = useState(false);
+  let [finishedProcessing, setFinishedProcessing] = useState(false);
+  let [finishedDownloading, setFinishedDownloading] = useState(false);
   let [loadingNumber, setLoadingNumber] = useState(-1);
   let loadingElement = useState(document.createElement('ion-loading'))[0];
   loadingElement.id = "loadingElement";
 
   // eslint-disable-next-line
-  let [stravaStats, setStravaStats] = useState(new StravaStats(setLoggedIn, setFinishedLoadingActivities, setLoadingNumber, getUrlParameter("code")));
+  let [stravaStats, setStravaStats] = useState(new StravaStats(setLoggedIn, setFinishedDownloading, setFinishedProcessing, setLoadingNumber, getUrlParameter("code")));
 
   let state:StateProps = {
-//    stravaStats: { get: ()=>stravaStats }
+    stravaStats: { stravaStats }
   };
 
 
@@ -54,7 +55,7 @@ const App: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    console.log("logged in=" + loggedIn);
+//    console.log("logged in=" + loggedIn);
     if (loggedIn === "true") {
       document.body.appendChild(loadingElement);
       setLoadingNumber(0);
@@ -63,24 +64,17 @@ const App: React.FC = () => {
   }, [loggedIn, stravaStats, loadingElement]);
 
   useEffect(() => {
-    if (loadingNumber >= 0 && !finishedLoadingActivities) {
+    if (loadingNumber >= 0 && !finishedDownloading) {
       let message = `Loading Activities: ${loadingNumber} loaded`
       loadingElement.message = message;
       loadingElement.present();
     }
-    else if (loadingNumber >=0 && finishedLoadingActivities) {
+    else if (loadingNumber >=0 && finishedDownloading) {
       let message = `Processing Activities: ${loadingNumber}%`
       loadingElement.message = message;
       loadingElement.present();
     }
-  }, [loadingNumber, loadingElement, finishedLoadingActivities]);
-
-  useEffect(() => {
-    console.log("finishedLoading: " + finishedLoadingActivities);
-    if (finishedLoadingActivities) {
-      stravaStats.processActivities();
-    }
-  }, [finishedLoadingActivities, stravaStats]);
+  }, [loadingNumber, loadingElement, finishedDownloading]);
 
 /**
   useEffect(() => {
@@ -89,30 +83,16 @@ const App: React.FC = () => {
   }, [state]);
 **/
 
-/**
-  useEffect(() => {
-    let mod = activities.length%200;
-    let after = activities.length > 1 ? new Date(activities[0].start_date).getTime()/1000 : undefined;
-    if (mod === 0 && accessInfo !== "" && finishedLoadingActivities === false) {
-      getActivities(state.activities, accessInfo, setFinishedLoadingActivities, after);
-    }
-    else if (activities.length > 1 && mod !== 0) {
-      setFinishedLoadingActivities(true);
-    }
-  // eslint-disable-next-line
-  }, [activities, accessInfo, finishedLoadingActivities]);
-**/
 
-/**
   useEffect(() => {
-    if (finishedLoadingActivities) {
+    if (finishedProcessing) {
       let remove = document.getElementById("loadingElement");
       if (remove)
         document.body.removeChild(remove);
-      console.log("Finished loading activities");
+      console.log("Finished Processing");
     }
-  }, [finishedLoadingActivities])
-**/
+  }, [finishedProcessing])
+
   return (
   <IonApp>
     <IonReactRouter>
@@ -120,12 +100,11 @@ const App: React.FC = () => {
           <Route path="/" render={props => {
             if (loggedIn === "false")
               return <Login {...props} {...state} />;
-            else if (loggedIn === "true") {
-              if (finishedLoadingActivities)
-                return <MainTabs {...props} {...state} />;
+            else if (loggedIn === "true" && finishedProcessing) {
+              return <MainTabs {...props} {...state} />;
             }
             else {
-              console.log("empty page");
+//              console.log("empty page");
               return <IonPage></IonPage>;
             }
           }}/>

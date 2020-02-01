@@ -20,11 +20,19 @@ export default class StravaStats {
   timer: any;
   setLoggedIn: Dispatch<SetStateAction<string>>;
   setLoadingNumber: Dispatch<SetStateAction<number>>;
-  setFinishedLoadingActivities: Dispatch<SetStateAction<boolean>>;
+  setFinishedDownloading: Dispatch<SetStateAction<boolean>>;
+  setFinishedProcessing: Dispatch<SetStateAction<boolean>>;
+  types: any;
 
-  constructor(setLoggedIn: Dispatch<SetStateAction<string>>, setFinishedLoadingActivities: Dispatch<SetStateAction<boolean>>, setLoadingNumber:Dispatch<SetStateAction<number>>, code?:string) {
+  constructor(
+        setLoggedIn: Dispatch<SetStateAction<string>>,
+        setFinishedDownloading: Dispatch<SetStateAction<boolean>>,
+        setFinishedProcessing: Dispatch<SetStateAction<boolean>>,
+        setLoadingNumber:Dispatch<SetStateAction<number>>,
+        code?:string) {
     this.setLoggedIn = setLoggedIn;
-    this.setFinishedLoadingActivities = setFinishedLoadingActivities;
+    this.setFinishedDownloading = setFinishedDownloading;
+    this.setFinishedProcessing = setFinishedProcessing;
     this.setLoadingNumber = setLoadingNumber;
     this.server = "https://bradleygraber.com/strava/process.php";
     this.url = "https://bradleygraber.com/strava";
@@ -51,12 +59,13 @@ export default class StravaStats {
       "ByState",
       "ByYear"
     ];
+    this.types = [];
     this.timer = new Date();
     this.init(code);
   }
 
   async init(code?:string) {
-    console.log("stravaStats init - code=" + code);
+//    console.log("stravaStats init - code=" + code);
     let savedStateString = await Storage.get({ key: 'stravaStatsState' })
 
     if (savedStateString.value !== null) {
@@ -112,7 +121,6 @@ export default class StravaStats {
       });
     });
   }
-
   async refreshAccessToken() {
     let accessInfoObj = this.loginData;
 
@@ -134,13 +142,12 @@ export default class StravaStats {
       },
       body: JSON.stringify(data)
     }
-    fetch(url, options)
+    return await fetch(url, options)
     .then((json) => {
       return json.json();
     })
     .then((data) => {
-      if (!data || data.message !== "success") {
-        console.log(data);
+      if (!data) {
         return;
       }
       this.loginData = data;
@@ -161,8 +168,9 @@ export default class StravaStats {
   async getActivities() {
     if (this.activities)
       var after = this.activities.length > 1 ? new Date(this.activities[0].start_date).getTime()/1000 : undefined;
-    console.log("getting Activities");
+    console.log("refreshing token");
     await this.refreshAccessToken();
+    console.log("getting activities");
     let accessInfoObj = this.loginData;
     let localActivities = this.activities ? this.activities : [];
 
@@ -189,33 +197,39 @@ export default class StravaStats {
       }
     })
     .then((data) => {
-      localActivities = localActivities.concat(data);
-      localActivities.sort(function (b: any, a: any) {
-        return new Date(a.start_date).getTime() - new Date(b.start_date).getTime();
-      });
-      if (data.length === 0) {
-        this.setFinishedLoadingActivities(true);
+      if (data) {
+        if (data.length === 0) {
+          console.log("finished downloading activities");
+          this.setFinishedDownloading(true);
+          this.processActivities();
+          console.log(this.activities.length);
+          return
+        }
+
+        localActivities = localActivities.concat(data);
+        localActivities.sort(function (b: any, a: any) {
+          return new Date(a.start_date).getTime() - new Date(b.start_date).getTime();
+        });
+
+        this.activities = localActivities.slice();
+        this.setLoadingNumber(this.activities.length);
         console.log(this.activities.length);
-        console.log("finished downloading activities");
-        return
+        this.saveState().then(() => {
+          this.getActivities()
+        });
       }
-      this.activities = localActivities.slice();
-      this.setLoadingNumber(this.activities.length);
-      console.log(this.activities.length);
-      this.saveState().then(() => {
-        this.getActivities()
-      });
+      else {
+        console.log(data);
+      }
     });
   }
-
   async processActivities(startFrom?: number) {
-    console.log("process=" + startFrom)
     var start = startFrom === undefined ? 0 : startFrom;
 
     var i = start;
     for (; i < this.activities.length && i < start+200; i++) {
       try {
-  //      this.addActivity(activities[i], state);
+        this.addActivity(this.activities[i]);
       }
       catch (e) {
         console.log(e);
@@ -223,14 +237,16 @@ export default class StravaStats {
     }
     if (i === this.activities.length) {
       this.setLoadingNumber(100);
-  //    this.calcAverages();
-  //    this.sort();
-      let localTypes:any[] = [];
+      this.calcAverages();
+      this.sort();
       for (var type in this.totals) {
-        localTypes.push(type);
+        this.types.push(type);
       }
+      console.log(this.types);
+      console.log(this.totals);
+      this.setFinishedProcessing(true);
       return new Promise(resolve => {
-        resolve(localTypes);
+        resolve(this.types);
       });
     }
     else {
@@ -239,10 +255,102 @@ export default class StravaStats {
       return new Promise(resolve => {
         setTimeout(() => {
           resolve(this.processActivities(i));
-        }, 1000);
+        }, 10);
       })
     }
   }
+  initializeType(type: string) {
+    if (this.totals[type])
+      return;
+    this.totals[type] = { };
+  }
+  addActivity(a: any) {
+    this.initializeType(a.type);
+    var stateName = "Unknown";
+    if (a.start_latlng) {
+      let point = { lat: a.start_latlng[0], lng: a.start_latlng[1] };
+      stateName = this.whichState.is(point);
+    }
+    var stateNum = 0;
+    for (let i = 0; i < stateName.length; i++) {
+      stateNum += (stateName.charCodeAt(i));
+    }
+    let date = new Date(a.start_date_local);
+    let year = date.getFullYear();
+
+    for (var iter in this.thingsToTrackBy) {
+      var by = this.thingsToTrackBy[iter];
+      var info = { name: "", iter: 0};
+      if (by === "ByState")
+        info = { name: stateName, iter: stateNum };
+      if (by === "ByYear")
+        info = { name: year.toString(), iter: year };
+      for (var stat in this.statsToTrack) {
+        let stravaName = this.statsToTrack[stat];
+        let t = this.totals[a.type];
+        let all = this.totals.all;
+
+        let statBy = stat + by;
+        if (!t[statBy])
+          t[statBy] = [];
+        if (!all[statBy])
+          all[statBy] = [];
+
+        let taStat = [ t[statBy], all[statBy] ];
+
+        // eslint-disable-next-line
+        taStat.forEach(function (stats) {
+          if (!stats[info.iter])
+            stats[info.iter] = { name: info.name, value: 0, count: 0 };
+          stats[info.iter].value += a[stravaName];
+          stats[info.iter].count++;
+        });
+      }
+    }
+  }
+  calcAverages() {
+    for (var type in this.totals) {
+      for (var statBy in this.totals[type]) {
+//        let by = this.match(statBy, "by");
+        var stat = this.match(statBy, "stat");
+        if (stat === "speed") {
+          for (var item in this.totals[type][statBy]) {
+            var count = this.totals[type][statBy][item].count;
+            this.totals[type][statBy][item].value = this.totals[type][statBy][item].value / count;
+          }
+        }
+      }
+    }
+  }
+  sort() {
+    for (var type in this.totals) {
+      for (var statBy in this.totals[type]) {
+        let by = this.match(statBy, "by");
+        if (by === "ByState") {
+          this.totals[type][statBy].sort(function (b:any, a:any) {
+            return a.value - b.value;
+          });
+        }
+        else if (by === "ByYear"){
+          this.totals[type][statBy].sort(function (a:any, b:any) {
+            return a.name - b.name;
+          });
+        }
+      }
+    }
+  }
+  match(string:string, match:string) {
+    let regex = /([A-Z])\w+/g;
+    if (match === "by")
+      regex = /([A-Z])\w+/g;
+    if (match === "stat")
+      regex = /^(.+?)(?=[A-Z])/g;
+    let value = string.match(regex);
+    if (value)
+      return value[0];
+    return "";
+  }
+
 
 /**
   clearData() {
@@ -308,86 +416,6 @@ export default class StravaStats {
         }, 0);
       })
     }
-  }
-  calcAverages() {
-    for (var type in this.totals) {
-      for (var statBy in this.totals[type]) {
-        let by = statBy.match(/([A-Z])\w+/g)[0];
-        var stat = statBy.match(/^(.+?)(?=[A-Z])/g)[0];
-        if (stat === "speed") {
-          for (var item in this.totals[type][statBy]) {
-            var count = this.totals[type][statBy][item].count;
-            this.totals[type][statBy][item].value = this.totals[type][statBy][item].value / count;
-          }
-        }
-      }
-    }
-  }
-  sort() {
-    for (var type in this.totals) {
-      for (var statBy in this.totals[type]) {
-        let by = statBy.match(/([A-Z])\w+/g)[0];
-        if (by == "ByState") {
-          this.totals[type][statBy].sort(function (b, a) {
-            return a.value - b.value;
-          });
-        }
-        else if (by === "ByYear"){
-          this.totals[type][statBy].sort(function (a, b) {
-            return a.name - b.name;
-          });
-        }
-      }
-    }
-  }
-  addActivity(a) {
-    this.initializeType(a.type);
-    if (a.start_latlng) {
-      let point = { lat: a.start_latlng[0], lng: a.start_latlng[1] };
-      var stateName = this.whichState.is(point);
-    }
-    else {
-      var stateName = "Unknown";
-    }
-    var stateNum = 0;
-    for (let i = 0; i < stateName.length; i++) {
-      stateNum += (stateName.charCodeAt(i));
-    }
-    let date = new Date(a.start_date_local);
-    let year = date.getFullYear();
-
-    for (var iter in this.thingsToTrackBy) {
-      var by = this.thingsToTrackBy[iter];
-      if (by === "ByState")
-        var info = { name: stateName, iter: stateNum };
-      if (by === "ByYear")
-        var info = { name: year, iter: year };
-      for (var stat in this.statsToTrack) {
-        let stravaName = this.statsToTrack[stat];
-        let t = this.totals[a.type];
-        let all = this.totals.all;
-
-        let statBy = stat + by;
-        if (!t[statBy])
-          t[statBy] = [];
-        if (!all[statBy])
-          all[statBy] = [];
-
-        let taStat = [ t[statBy], all[statBy] ];
-
-        taStat.forEach(function (stats) {
-          if (!stats[info.iter])
-            stats[info.iter] = { name: info.name, value: 0, count: 0 };
-          stats[info.iter].value += a[stravaName];
-          stats[info.iter].count++;
-        });
-      }
-    }
-  }
-  initializeType(type) {
-    if (this.totals[type])
-      return;
-    this.totals[type] = { };
   }
 
   //HTML Functions
