@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Route } from 'react-router-dom';
 import { IonApp, IonRouterOutlet, IonPage, IonSplitPane } from '@ionic/react';
 import { IonReactRouter } from '@ionic/react-router';
+import './App.scss';
 
 import Login from './pages/login';
 import MainTabs from './pages/mainTabs';
@@ -95,9 +96,8 @@ const App: React.FC = () => {
   }, [finishedProcessing])
 
   return (
-  <IonApp>
+  <IonApp id="stravaStatsApp">
     <IonReactRouter>
-      <IonSplitPane contentId="main">
         <Menu />
         <IonRouterOutlet id="main">
           <Route path="/" render={props => {
@@ -112,7 +112,6 @@ const App: React.FC = () => {
             }
           }}/>
         </IonRouterOutlet>
-      </IonSplitPane>
     </IonReactRouter>
   </IonApp>
   )

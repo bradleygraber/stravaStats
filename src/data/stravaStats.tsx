@@ -47,7 +47,7 @@ export default class StravaStats {
     }
 
     this.totals = {
-      "all": { }
+      "All": { }
     };
     this.statsToTrack = {
       "distance": "distance",
@@ -239,6 +239,7 @@ export default class StravaStats {
       this.setLoadingNumber(100);
       this.calcAverages();
       this.sort();
+      this.convertToDisplayValues();
       for (var type in this.totals) {
         this.types.push(type);
       }
@@ -286,15 +287,15 @@ export default class StravaStats {
       for (var stat in this.statsToTrack) {
         let stravaName = this.statsToTrack[stat];
         let t = this.totals[a.type];
-        let all = this.totals.all;
+        let All = this.totals.All;
 
         let statBy = stat + by;
         if (!t[statBy])
           t[statBy] = [];
-        if (!all[statBy])
-          all[statBy] = [];
+        if (!All[statBy])
+          All[statBy] = [];
 
-        let taStat = [ t[statBy], all[statBy] ];
+        let taStat = [ t[statBy], All[statBy] ];
 
         // eslint-disable-next-line
         taStat.forEach(function (stats) {
@@ -347,6 +348,45 @@ export default class StravaStats {
     if (value)
       return value[0];
     return "";
+  }
+
+  convertToDisplayValues() {
+    for (let type in this.totals) {
+      console.log(type);
+      for (let statBy in this.totals[type]) {
+        let stat = this.match(statBy, "stat");
+        let by = this.match(statBy, "by");
+        for (let index in this.totals[type][statBy]) {
+          let item = this.totals[type][statBy][index];
+          if (stat === "distance")
+            item.value = (Math.round(item.value/1000*0.621372) + ' mi');
+          if (stat === "time")
+            item.value = (Math.round(item.value/60/60) + ' hrs');
+          if (stat === "elevation")
+            item.value = (this.formatNumber(Math.round(item.value*3.2)) + ' ft');
+          if (stat === "speed") {
+            if (type === "Ride")
+              item.value = (this.formatNumber((2.23694 * (item.value)).toFixed(2)) + ' mph');
+            else
+              item.value = (this.timeConvert((26.8224 / (item.value)).toFixed(2)));
+          }
+        }
+      }
+    }
+  }
+  timeConvert (minutes: any){
+     var sign = minutes < 0 ? "-" : "";
+     var min = Math.floor(Math.abs(minutes));
+     var sec = Math.floor((Math.abs(minutes) * 60) % 60);
+     return sign + (min < 10 ? "0" : "") + min + ":" + (sec < 10 ? "0" : "") + sec;
+  }
+  formatNumber(num: any) {
+    return num.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')
+  }
+  capitalize(s: any) {
+    if (typeof s !== 'string') return '';
+    s = s.replace(/([A-Z])/g, ' $1').trim();
+    return s.charAt(0).toUpperCase() + s.slice(1);
   }
 
   getTotals() {

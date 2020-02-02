@@ -1,5 +1,5 @@
 import { IonPage, IonHeader, IonToolbar, IonMenuButton, IonTitle,
-  IonButtons, IonContent, IonSelect, IonSelectOption, IonGrid, IonRow, IonCol} from '@ionic/react';
+  IonButtons, IonContent, IonSelect, IonSelectOption, IonGrid, IonRow, IonCol, IonList, IonItem, IonLabel, IonListHeader} from '@ionic/react';
 import React from 'react';
 import { RouteComponentProps } from 'react-router';
 import { StateProps } from '../data/state';
@@ -28,7 +28,7 @@ const StravaTab: React.FC<StravaTabProps> = ({stravaStats, match}) => {
     s = s.replace(/([A-Z])/g, ' $1').trim();
     return s.charAt(0).toUpperCase() + s.slice(1);
   }
-
+  let distanceByYear = totals.totals[tab].distanceByYear
 
 
   return (
@@ -62,6 +62,13 @@ const StravaTab: React.FC<StravaTabProps> = ({stravaStats, match}) => {
             </IonCol>
           </IonRow>
         </IonGrid>
+        <IonList>
+          <IonItem slot="end">ASDF</IonItem>
+          {distanceByYear.map((value: any, index: number) => {
+            return <IonItem key={index}>{value.name}: {value.value}</IonItem>
+            console.log(value);
+          })}
+        </IonList>
       </IonContent>
     </IonPage>
   );
