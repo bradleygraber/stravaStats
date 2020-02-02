@@ -1,5 +1,5 @@
 import { IonPage, IonHeader, IonToolbar, IonMenuButton, IonTitle,
-  IonButtons, IonContent, IonSelect, IonSelectOption, IonGrid, IonRow, IonCol, IonList, IonItem, IonLabel, IonListHeader} from '@ionic/react';
+  IonButtons, IonContent, IonSelect, IonSelectOption, IonGrid, IonRow, IonCol, IonList, IonItem} from '@ionic/react';
 import React from 'react';
 import { RouteComponentProps } from 'react-router';
 import { StateProps } from '../data/state';
@@ -66,7 +66,6 @@ const StravaTab: React.FC<StravaTabProps> = ({stravaStats, match}) => {
           <IonItem slot="end">ASDF</IonItem>
           {distanceByYear.map((value: any, index: number) => {
             return <IonItem key={index}>{value.name}: {value.value}</IonItem>
-            console.log(value);
           })}
         </IonList>
       </IonContent>

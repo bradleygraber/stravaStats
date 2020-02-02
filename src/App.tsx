@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Route } from 'react-router-dom';
-import { IonApp, IonRouterOutlet, IonPage, IonSplitPane } from '@ionic/react';
+import { IonApp, IonRouterOutlet, IonPage } from '@ionic/react';
 import { IonReactRouter } from '@ionic/react-router';
 import './App.scss';
 

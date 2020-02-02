@@ -355,7 +355,7 @@ export default class StravaStats {
       console.log(type);
       for (let statBy in this.totals[type]) {
         let stat = this.match(statBy, "stat");
-        let by = this.match(statBy, "by");
+//        let by = this.match(statBy, "by");
         for (let index in this.totals[type][statBy]) {
           let item = this.totals[type][statBy][index];
           if (stat === "distance")
