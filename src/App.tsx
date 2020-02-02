@@ -45,7 +45,7 @@ const App: React.FC = () => {
   let [stravaStats, setStravaStats] = useState(new StravaStats(setLoggedIn, setFinishedDownloading, setFinishedProcessing, setLoadingNumber, getUrlParameter("code")));
 
   let state:StateProps = {
-    stravaStats: { stravaStats }
+    stravaStats: stravaStats
   };
 
 

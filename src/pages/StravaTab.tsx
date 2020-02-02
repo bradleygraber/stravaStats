@@ -4,14 +4,15 @@ import { RouteComponentProps } from 'react-router';
 
 interface UserDetailPageProps extends RouteComponentProps<{
   home: string;
+
 }> {}
 
-const Ride: React.FC<UserDetailPageProps> = ({match}) => {
+const StravaTab: React.FC<UserDetailPageProps> = ({match}) => {
   return (
-    <IonPage id="tabListing">
+    <IonPage>
     Ride - {JSON.stringify(match)}
     </IonPage>
   );
 };
 
-export default Ride;
+export default StravaTab;

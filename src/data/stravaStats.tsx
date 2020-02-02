@@ -242,8 +242,6 @@ export default class StravaStats {
       for (var type in this.totals) {
         this.types.push(type);
       }
-      console.log(this.types);
-      console.log(this.totals);
       this.setFinishedProcessing(true);
       return new Promise(resolve => {
         resolve(this.types);
@@ -351,6 +349,9 @@ export default class StravaStats {
     return "";
   }
 
+  getTotals() {
+    return this.totals;
+  }
 
 /**
   clearData() {
