@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { Route } from 'react-router-dom';
-import { IonApp, IonRouterOutlet, IonPage } from '@ionic/react';
+import { IonApp, IonRouterOutlet, IonPage, IonSplitPane } from '@ionic/react';
 import { IonReactRouter } from '@ionic/react-router';
 
 import Login from './pages/login';
 import MainTabs from './pages/mainTabs';
+import Menu from './pages/Menu';
 
 import { StateProps } from './data/state'
 
@@ -96,7 +97,9 @@ const App: React.FC = () => {
   return (
   <IonApp>
     <IonReactRouter>
-        <IonRouterOutlet>
+      <IonSplitPane contentId="main">
+        <Menu />
+        <IonRouterOutlet id="main">
           <Route path="/" render={props => {
             if (loggedIn === "false")
               return <Login {...props} {...state} />;
@@ -109,6 +112,7 @@ const App: React.FC = () => {
             }
           }}/>
         </IonRouterOutlet>
+      </IonSplitPane>
     </IonReactRouter>
   </IonApp>
   )

@@ -1,6 +1,6 @@
 import { IonTabs, IonTabBar, IonIcon, IonLabel, IonTabButton, IonRouterOutlet } from '@ionic/react';
 import { IonReactRouter } from '@ionic/react-router';
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { flash } from 'ionicons/icons';
 import { Route } from 'react-router';
 import StravaTab from './StravaTab';

@@ -1,4 +1,4 @@
-import { IonPage } from '@ionic/react';
+import { IonPage, IonHeader, IonToolbar, IonMenuButton, IonTitle, IonButtons, IonContent} from '@ionic/react';
 import React from 'react';
 import { RouteComponentProps } from 'react-router';
 
@@ -10,7 +10,17 @@ interface UserDetailPageProps extends RouteComponentProps<{
 const StravaTab: React.FC<UserDetailPageProps> = ({match}) => {
   return (
     <IonPage>
-    Ride - {JSON.stringify(match)}
+      <IonHeader>
+        <IonToolbar>
+          <IonButtons slot="start">
+            <IonMenuButton></IonMenuButton>
+          </IonButtons>
+          <IonTitle>Ride</IonTitle>
+        </IonToolbar>
+      </IonHeader>
+      <IonContent>
+        Ride - {JSON.stringify(match)}
+      </IonContent>
     </IonPage>
   );
 };
