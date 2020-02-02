@@ -2,7 +2,7 @@ import { IonTabs, IonTabBar, IonIcon, IonLabel, IonTabButton, IonRouterOutlet } 
 import { IonReactRouter } from '@ionic/react-router';
 import React, { useEffect } from 'react';
 import { flash } from 'ionicons/icons';
-import { Route } from 'react-router';
+import { Route, Redirect } from 'react-router';
 import StravaTab from './StravaTab';
 import { StateProps } from '../data/state';
 
@@ -17,11 +17,11 @@ const MainTabs: React.FC<StateProps> = ({stravaStats}) => {
 
   let tabs = [];
   let ros = [];
-  for (let tab in stravaStats.getTotals()) {
+  for (let tab in stravaStats.getTotals().totals) {
     let name = tab.charAt(0).toUpperCase() + tab.slice(1);
     let ref = `/tabs/${name}`;
     ros.push(<Route key={tab} path={ref} render={props => {
-      return <StravaTab {...props} />
+      return <StravaTab {...props} {...{stravaStats}}/>
     }} />)
     tabs.push(<IonTabButton key={tab} tab={tab} href={ref}><IonIcon icon={flash}/><IonLabel>{name}</IonLabel></IonTabButton>)
   }
@@ -31,6 +31,7 @@ const MainTabs: React.FC<StateProps> = ({stravaStats}) => {
       <IonTabs>
         <IonRouterOutlet>
           {ros}
+          <Redirect exact from="/" to="/tabs/All" />
         </IonRouterOutlet>
         <IonTabBar slot="bottom">
           {tabs}
