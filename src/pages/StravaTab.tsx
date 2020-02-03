@@ -1,6 +1,6 @@
 import { IonPage, IonHeader, IonToolbar, IonMenuButton, IonTitle,
   IonButtons, IonContent, IonSelect, IonSelectOption, IonGrid, IonRow, IonCol, IonList, IonItem, IonLabel} from '@ionic/react';
-import React from 'react';
+import React, { useState } from 'react';
 import { RouteComponentProps } from 'react-router';
 import { StateProps } from '../data/state';
 import './StravaTab.scss';
@@ -12,25 +12,30 @@ const StravaTab: React.FC<StravaTabProps> = ({stravaStats, match}) => {
   if (tab)
     tab = tab[1];
 
+  let [displayStat, setDisplayStat] = useState("distance");
+  let [displayBy, setDisplayBy] = useState("ByState");
+
   let totals = stravaStats.getTotals();
-
   let stats = [];
-  for (let line in totals.stats) {
-    stats.push(capitalize(line))
-  }
-
   let by = [];
-  for (let line in totals.by) {
-    by.push(capitalize(totals.by[line]));
-  }
+  for (let line in totals.stats) { stats.push(capitalize(line)); }
+  for (let line in totals.by) { by.push(capitalize(totals.by[line])); }
 
   function capitalize (s: string) {
     if (typeof s !== 'string') return '';
     s = s.replace(/([A-Z])/g, ' $1').trim();
     return s.charAt(0).toUpperCase() + s.slice(1);
   }
-  let distanceByYear = totals.totals[tab].distanceByYear
 
+  let displayList = totals.totals[tab][displayStat + displayBy];
+
+  let statsSelectionChanged = (e: any) => {
+    setDisplayStat(e.detail.value.toLowerCase());
+  }
+  let bySelectionChanged = (e: any) => {
+    let noSpace = e.detail.value.replace(/\s/g, '');
+    setDisplayBy(noSpace);
+  }
 
   return (
     <IonPage className="dark-theme">
@@ -46,7 +51,7 @@ const StravaTab: React.FC<StravaTabProps> = ({stravaStats, match}) => {
         <IonGrid class="strava-list-item">
           <IonRow>
             <IonCol>
-              <IonSelect>
+              <IonSelect interface="popover" mode="md" onIonChange={statsSelectionChanged} >
                 {stats.map((value, index) => {
                   let selected = index === 0 ? true : false;
                   return <IonSelectOption selected={selected} key={index} value={value}>{value}</IonSelectOption>;
@@ -54,7 +59,7 @@ const StravaTab: React.FC<StravaTabProps> = ({stravaStats, match}) => {
               </IonSelect>
             </IonCol>
             <IonCol>
-              <IonSelect>
+              <IonSelect interface="popover" mode="md" onIonChange={bySelectionChanged}>
                 {by.map((value, index) => {
                   let selected = index === 0 ? true : false;
                   return <IonSelectOption selected={selected} key={index} value={value}>{value}</IonSelectOption>;
@@ -65,7 +70,7 @@ const StravaTab: React.FC<StravaTabProps> = ({stravaStats, match}) => {
           <IonRow>
             <IonCol>
               <IonList>
-                {distanceByYear.map((value: any, index: number) => {
+                {displayList.map((value: any, index: number) => {
                   return <IonItem key={index}><IonLabel class="ion-text-center">{value.name}: {value.value}</IonLabel></IonItem>
                 })}
               </IonList>
