@@ -66,7 +66,7 @@ const StravaTab: React.FC<StravaTabProps> = ({stravaStats, match}) => {
             <IonCol>
               <IonList>
                 {distanceByYear.map((value: any, index: number) => {
-                  return <IonItem button key={index}><IonLabel class="ion-text-center">{value.name}: {value.value}</IonLabel></IonItem>
+                  return <IonItem key={index}><IonLabel class="ion-text-center">{value.name}: {value.value}</IonLabel></IonItem>
                 })}
               </IonList>
             </IonCol>

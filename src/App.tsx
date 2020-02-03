@@ -36,6 +36,7 @@ import './theme/variables.css';
 
 const App: React.FC = () => {
 //  console.log("rendering");
+  let [darkMode, setDarkMode] = useState(false);
   let [loggedIn, setLoggedIn] = useState("loading");
   let [finishedProcessing, setFinishedProcessing] = useState(false);
   let [finishedDownloading, setFinishedDownloading] = useState(false);
@@ -47,6 +48,7 @@ const App: React.FC = () => {
   let [stravaStats, setStravaStats] = useState(new StravaStats(setLoggedIn, setFinishedDownloading, setFinishedProcessing, setLoadingNumber, getUrlParameter("code")));
 
   let state:StateProps = {
+    darkMode: {get: ()=>darkMode, set: setDarkMode},
     stravaStats: stravaStats
   };
 
@@ -96,9 +98,9 @@ const App: React.FC = () => {
   }, [finishedProcessing])
 
   return (
-  <IonApp id="stravaStatsApp" className="dark-theme">
+  <IonApp id="stravaStatsApp" className={darkMode ? "dark-theme" : ""}>
     <IonReactRouter>
-        <Menu />
+        <Menu {...state}/>
         <IonRouterOutlet id="main">
           <Route path="/" render={props => {
             if (loggedIn === "false")
