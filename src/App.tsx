@@ -96,7 +96,7 @@ const App: React.FC = () => {
   }, [finishedProcessing])
 
   return (
-  <IonApp id="stravaStatsApp">
+  <IonApp id="stravaStatsApp" className="dark-theme">
     <IonReactRouter>
         <Menu />
         <IonRouterOutlet id="main">
