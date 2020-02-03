@@ -33,6 +33,9 @@ import '@ionic/react/css/display.css';
 /* Theme variables */
 import './theme/variables.css';
 
+import { Plugins } from '@capacitor/core';
+const { Storage } = Plugins;
+
 
 const App: React.FC = () => {
 //  console.log("rendering");
@@ -47,16 +50,27 @@ const App: React.FC = () => {
   // eslint-disable-next-line
   let [stravaStats, setStravaStats] = useState(new StravaStats(setLoggedIn, setFinishedDownloading, setFinishedProcessing, setLoadingNumber, getUrlParameter("code")));
 
+  let getUserPrefs = async ()=>{
+    let userPrefs = await Storage.get({ key: 'stravaAppUserPrefs' });
+    let bool:boolean = userPrefs.value === "true" ? true : false;
+    setDarkMode(bool);
+  }
+  let saveUserPrefs = async (darkMode: boolean)=> {
+    Storage.set({key: "stravaAppUserPrefs", value: darkMode.toString()});
+  }
+
   let state:StateProps = {
     darkMode: {get: ()=>darkMode, set: setDarkMode},
     stravaStats: stravaStats
   };
 
+  useEffect(() => {
+    getUserPrefs();
+  }, []);
 
   useEffect(() => {
-//    updateStateFromStorage(state);
-    // eslint-disable-next-line
-  }, []);
+    saveUserPrefs(darkMode);
+  }, [darkMode]);
 
   useEffect(() => {
 //    console.log("logged in=" + loggedIn);
