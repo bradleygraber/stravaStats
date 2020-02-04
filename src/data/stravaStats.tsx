@@ -356,8 +356,19 @@ export default class StravaStats {
       for (let statBy in this.totals[type]) {
         let stat = this.match(statBy, "stat");
 //        let by = this.match(statBy, "by");
+        let record = 0;
+        let recordIndex = -1;
         for (let index in this.totals[type][statBy]) {
           let item = this.totals[type][statBy][index];
+          if (item.value > record) {
+            if (recordIndex >= 0)
+              this.totals[type][statBy][recordIndex].record = false;
+            record = item.value;
+            recordIndex = parseInt(index);
+            item.record = true;
+          }
+          else
+            item.record = false;
           if (stat === "distance")
             item.value = (Math.round(item.value/1000*0.621372) + ' mi');
           if (stat === "time")
