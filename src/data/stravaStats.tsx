@@ -171,7 +171,7 @@ export default class StravaStats {
     return Storage.remove({key: "stravaStatsState"});
   }
 
-  async getActivities() {
+  async getActivities(numOfAttempts?: number) {
     if (this.activities)
       var after = this.activities.length > 1 ? new Date(this.activities[0].start_date).getTime()/1000 : undefined;
     console.log("refreshing token");
@@ -198,8 +198,19 @@ export default class StravaStats {
       if (json.status === 200)
         return json.json();
       else {
+        console.log(numOfAttempts);
         console.log("failed to retrieve activities");
         console.log(json);
+        if (numOfAttempts && numOfAttempts > 3) {
+          console.log("failed more than 3 times");
+          this.setLoadingNumber(numOfAttempts ? numOfAttempts * -1: -1);
+        }
+        else {
+          this.setLoadingNumber(numOfAttempts ? numOfAttempts * -1: -1);
+          setTimeout(() => {
+            this.getActivities(numOfAttempts ? numOfAttempts+1 : 1);
+          }, 2000);
+        }
       }
     })
     .then((data) => {

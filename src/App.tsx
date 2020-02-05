@@ -83,7 +83,7 @@ const App: React.FC = () => {
 
   useEffect(() => {
     if (loadingNumber >= 0 && !finishedDownloading) {
-      let message = `Loading Activities: ${loadingNumber} loaded`
+      let message = loadingNumber === 0 ? `Loading Activities: Please Wait` : `Loading Activities: ${loadingNumber} loaded`
       loadingElement.message = message;
       loadingElement.present();
     }
@@ -91,6 +91,17 @@ const App: React.FC = () => {
       let message = `Processing Activities: ${loadingNumber}%`
       loadingElement.message = message;
       loadingElement.present();
+    }
+    else if (loadingNumber <= -1 && loadingElement.present) {
+      let message = `Failed to contact server. <br>Retry Attempt #${(loadingNumber) * -1}`
+      loadingElement.message = message;
+      loadingElement.present();
+      if (loadingNumber < -3) {
+        let remove = document.getElementById("loadingElement");
+        if (remove)
+          document.body.removeChild(remove);
+        document.body.append("Server Error.  Check your connection and reload.  If the problem persists, the server may be down.      Check the Strava server status at https://status.strava.com/");
+      }
     }
   }, [loadingNumber, loadingElement, finishedDownloading]);
 
@@ -112,7 +123,7 @@ const App: React.FC = () => {
   }, [finishedProcessing])
 
   return (
-  <IonApp id="stravaStatsApp" className={darkMode ? "dark-theme" : ""}>
+  <IonApp id="stravaStatsApp" className={darkMode ? "dark-theme" : "bg-class"}>
     <IonReactRouter>
         <Menu {...state}/>
         <IonRouterOutlet id="main">
