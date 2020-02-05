@@ -1,6 +1,8 @@
 import { IonPage, IonHeader, IonToolbar, IonMenuButton, IonTitle, IonIcon,
-  IonButtons, IonContent, IonSelect, IonSelectOption, IonGrid, IonRow, IonCol, IonList, IonItem, IonLabel} from '@ionic/react';
+  IonButtons, IonContent, IonSelect, IonSelectOption, IonGrid, IonRow, IonCol} from '@ionic/react';
 import { star } from 'ionicons/icons';
+
+import DataTable from 'react-data-table-component';
 
 import React, { useState, useEffect } from 'react';
 import { RouteComponentProps } from 'react-router';
@@ -12,7 +14,7 @@ const { Storage } = Plugins;
 
 interface StravaTabProps extends RouteComponentProps, StateProps { };
 
-const StravaTab: React.FC<StravaTabProps> = ({stravaStats, match}) => {
+const StravaTab: React.FC<StravaTabProps> = ({stravaStats, match, darkMode}) => {
   let tab:any = match.path.match(/\w+/g);
   if (tab)
     tab = tab[1];
@@ -33,6 +35,10 @@ const StravaTab: React.FC<StravaTabProps> = ({stravaStats, match}) => {
   }
 
   let displayList = totals.totals[tab][displayStat.toLowerCase() + displayBy.replace(/\s/g, '')];
+  displayList.forEach((row: any) => {
+    if (row.record === true)
+      row.star = <IonIcon  icon={star} />;
+  });
 
   let statsSelectionChanged = (e: any) => {
     setDisplayStat(e.detail.value);
@@ -60,6 +66,37 @@ const StravaTab: React.FC<StravaTabProps> = ({stravaStats, match}) => {
     // eslint-disable-next-line
   }, [displayStat, displayBy]);
 
+  let columns:any = [
+    {
+      name: 'Star',
+      selector: 'star',
+      left: true,
+      width: "20px",
+      compact: true,
+    },
+    {
+      name: 'Year',
+      selector: 'name',
+      left: true,
+      width: "auto",
+      compact: true,
+    },
+    {
+      name: 'Data',
+      selector: 'value',
+      center: true,
+      width: "auto",
+    },
+  ]
+  if (displayStat !== "Speed") {
+    columns.push({
+      name: 'Percent',
+      selector: 'percent',
+      right: true,
+      width: "auto",
+    });
+  }
+  let total = stravaStats.finalTotals[tab][displayStat.toLowerCase() + displayBy.replace(/\s/g, '')];
 
   return (
     <IonPage className="dark-theme">
@@ -77,7 +114,6 @@ const StravaTab: React.FC<StravaTabProps> = ({stravaStats, match}) => {
             <IonCol>
               <IonSelect selectedText={displayStat} interface="popover" onIonChange={statsSelectionChanged} >
                 {stats.map((value, index) => {
-                  console.log(displayStat);
                   let selected = value === displayStat ? true : false;
                   return <IonSelectOption selected={selected} key={index} value={value}>{value}</IonSelectOption>;
                 })}
@@ -94,14 +130,19 @@ const StravaTab: React.FC<StravaTabProps> = ({stravaStats, match}) => {
           </IonRow>
           <IonRow>
             <IonCol>
-              <IonList>
-                {displayList.map((value: any, index: number) => {
-                  return (<IonItem key={index}>
-                            {value.record ? <IonIcon icon={star} /> : ""}
-                            <IonLabel class="ion-text-center">{value.name}: {value.value}</IonLabel>
-                          </IonItem>)
-                })}
-              </IonList>
+              <DataTable
+                theme={darkMode.get() ? "dark" : "light"}
+                title={`Total: ${total}`}
+                subHeader={displayStat !== "Speed"}
+                subHeaderComponent={`Total: ${total}`}
+                subHeaderAlign={"center"}
+                columns={columns}
+                data={displayList}
+                noHeader={true}
+                noTableHead={true}
+                dense={true}
+                highlightOnHover={true}
+              />
             </IonCol>
           </IonRow>
         </IonGrid>

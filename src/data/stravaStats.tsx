@@ -23,6 +23,7 @@ export default class StravaStats {
   setFinishedDownloading: Dispatch<SetStateAction<boolean>>;
   setFinishedProcessing: Dispatch<SetStateAction<boolean>>;
   types: any;
+  finalTotals: any;
 
   constructor(
         setLoggedIn: Dispatch<SetStateAction<string>>,
@@ -47,8 +48,9 @@ export default class StravaStats {
     }
 
     this.totals = {
-      "All": { }
+      "All": { },
     };
+    this.finalTotals = {"All": { }};
     this.statsToTrack = {
       "distance": "distance",
       "time": "moving_time",
@@ -262,6 +264,7 @@ export default class StravaStats {
     if (this.totals[type])
       return;
     this.totals[type] = { };
+    this.finalTotals[type] = { };
   }
   addActivity(a: any) {
     this.initializeType(a.type);
@@ -335,6 +338,9 @@ export default class StravaStats {
             return a.name - b.name;
           });
         }
+        this.totals[type][statBy] = this.totals[type][statBy].filter(function (el: any) {
+          return el != null;
+        });
       }
     }
   }
@@ -352,14 +358,17 @@ export default class StravaStats {
 
   convertToDisplayValues() {
     for (let type in this.totals) {
-      console.log(type);
       for (let statBy in this.totals[type]) {
         let stat = this.match(statBy, "stat");
 //        let by = this.match(statBy, "by");
         let record = 0;
         let recordIndex = -1;
+        const total = this.totals[type][statBy].reduce((prev: number,next: any) => prev + next.value,0);
+        this.finalTotals[type][statBy] = this.formatByStat(total, stat, type);
         for (let index in this.totals[type][statBy]) {
           let item = this.totals[type][statBy][index];
+          item.id = index;
+          item.percent = ((item.value / total)*100).toFixed(0) + "%";
           if (item.value > record) {
             if (recordIndex >= 0)
               this.totals[type][statBy][recordIndex].record = false;
@@ -369,20 +378,24 @@ export default class StravaStats {
           }
           else
             item.record = false;
-          if (stat === "distance")
-            item.value = (Math.round(item.value/1000*0.621372) + ' mi');
-          if (stat === "time")
-            item.value = (Math.round(item.value/60/60) + ' hrs');
-          if (stat === "elevation")
-            item.value = (this.formatNumber(Math.round(item.value*3.2)) + ' ft');
-          if (stat === "speed") {
-            if (type === "Ride")
-              item.value = (this.formatNumber((2.23694 * (item.value)).toFixed(2)) + ' mph');
-            else
-              item.value = (this.timeConvert((26.8224 / (item.value)).toFixed(2)));
-          }
+
+          item.value = this.formatByStat(item.value, stat, type);
         }
       }
+    }
+  }
+  formatByStat(value: number, stat: string, type: string) {
+    if (stat === "distance")
+      return (this.formatNumber(Math.round(value/1000*0.621372)) + ' mi');
+    if (stat === "time")
+      return (Math.round(value/60/60) + ' hrs');
+    if (stat === "elevation")
+      return (this.formatNumber(Math.round(value*3.2)) + ' ft');
+    if (stat === "speed") {
+      if (type === "Ride")
+        return (this.formatNumber((2.23694 * (value)).toFixed(2)) + ' mph');
+      else
+        return (this.timeConvert((26.8224 / (value)).toFixed(2)));
     }
   }
   timeConvert (minutes: any){
