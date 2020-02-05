@@ -1,18 +1,23 @@
 import * as turf from '@turf/boolean-point-in-polygon';
-import { US_STATES } from './usStates';
-import { COUNTRIES } from './worldSmall';
 
 export default class WhichState {
   previousHits: any;
   previousCountries: any;
   boundries: any;
   countryBoundries: any;
+  loaded: boolean;
 
   constructor() {
     this.previousHits = [];
     this.previousCountries = [];
     this.boundries = [];
     this.countryBoundries = [];
+    this.loaded = false;
+    this.init();
+  }
+  async init() {
+    let { US_STATES } = await import('./usStates');
+    let { COUNTRIES } = await import('./worldSmall');
     for (let i in US_STATES) {
       let feature = US_STATES[i];
       this.boundries.push({name: feature.name, geometry: feature.geometry});
@@ -21,9 +26,18 @@ export default class WhichState {
       let feature = COUNTRIES[i];
       this.countryBoundries.push({name: feature.name, geometry: feature.geometry})
     }
+    this.loaded = true;
   }
 
-  is (point: any) {
+  async is (point: any) {
+    if (!this.loaded) {
+      console.log("not loaded, waiting 200ms");
+      return new Promise(resolve => {
+        setTimeout(() => {
+          resolve(this.is(point));
+        }, 200);
+      });
+    }
     if (!turf)
       throw new Error("Turf is Required, please install it first.");
     if (!point || !point.lat || !point.lng)
@@ -34,31 +48,31 @@ export default class WhichState {
       let s = this.previousHits[i];
       let state = this.boundries[s];
       if (turf.default(point, state.geometry)) {
-        return state.name;
+        return new Promise(resolve => { resolve(state.name); });
       }
     }
     for (let s in this.boundries) {
       let state = this.boundries[s];
       if (turf.default(point, state.geometry)) {
         this.previousHits.push(s);
-        return state.name;
+        return new Promise(resolve => { resolve(state.name); });
       }
     }
     for (let i = 0; i < this.previousCountries.length; i++) {
       let s = this.previousCountries[i];
       let state = this.countryBoundries[s];
       if (turf.default(point, state.geometry)) {
-        return state.name;
+        return new Promise(resolve => { resolve(state.name); });
       }
     }
     for (let s in this.countryBoundries) {
       let state = this.countryBoundries[s];
       if (state.name !==   "United States" && turf.default(point, state.geometry)) {
         this.previousCountries.push(s);
-        return state.name;
+        return new Promise(resolve => { resolve(state.name); });
       }
     }
     //    return "Unknown " + point[1] + "," + point[0];
-    return "Unknown";
+    return new Promise(resolve => { resolve("Unknown"); });
   }
 }

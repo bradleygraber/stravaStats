@@ -235,7 +235,7 @@ export default class StravaStats {
     var i = start;
     for (; i < this.activities.length && i < start+200; i++) {
       try {
-        this.addActivity(this.activities[i]);
+        await this.addActivity(this.activities[i]);
       }
       catch (e) {
         console.log(e);
@@ -270,12 +270,12 @@ export default class StravaStats {
     this.totals[type] = { };
     this.finalTotals[type] = { };
   }
-  addActivity(a: any) {
+  async addActivity(a: any) {
     this.initializeType(a.type);
     var stateName = "Unknown";
     if (a.start_latlng) {
       let point = { lat: a.start_latlng[0], lng: a.start_latlng[1] };
-      stateName = this.whichState.is(point);
+      stateName = await this.whichState.is(point);
     }
     var stateNum = 0;
     for (let i = 0; i < stateName.length; i++) {
