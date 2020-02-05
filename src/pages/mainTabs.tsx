@@ -1,7 +1,7 @@
 import { IonTabs, IonTabBar, IonIcon, IonLabel, IonTabButton, IonRouterOutlet } from '@ionic/react';
 import { IonReactRouter } from '@ionic/react-router';
 import React, { useEffect } from 'react';
-import { aperture, bicycle, flash, walk } from 'ionicons/icons';
+import { aperture, bicycle, walk } from 'ionicons/icons';
 import { Route, Redirect } from 'react-router';
 import StravaTab from './StravaTab';
 import { StateProps } from '../data/state';
@@ -36,7 +36,7 @@ interface StringIter {
     tabs.push(
       <IonTabButton key={tab} tab={tab} href={ref}>
         <IonIcon
-        icon={icons[tab] ? icons[tab] : flash}
+        icon={icons[tab] ? icons[tab] : walk}
         />
         <IonLabel>{name}</IonLabel>
       </IonTabButton>)
