@@ -167,6 +167,9 @@ export default class StravaStats {
       }
     )});
   }
+  async clearStoredData() {
+    return Storage.remove({key: "stravaStatsState"});
+  }
 
   async getActivities() {
     if (this.activities)

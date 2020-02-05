@@ -5,10 +5,15 @@ import { StateProps } from '../data/state'
 import { Plugins } from '@capacitor/core';
 const { Storage } = Plugins;
 
-export const Menu: React.FC<StateProps> = ({darkMode}) => {
+export const Menu: React.FC<StateProps> = ({darkMode, stravaStats}) => {
 
-  let click = (e:any) => {
-    Storage.remove({key: "stravaStatsState" }).then(() => { window.location.reload(true); });
+  let click = async (e:any) => {
+    await stravaStats.clearStoredData();
+    for (let tab in stravaStats.getTotals().totals) {
+      await Storage.remove({key: "stravaTabSaveDisplay" + tab});
+    }
+    await Storage.remove({key: "stravaAppUserPrefs"});
+//    window.location.reload(true);
   }
 
   return (
