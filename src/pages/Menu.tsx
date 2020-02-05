@@ -13,7 +13,7 @@ export const Menu: React.FC<StateProps> = ({darkMode, stravaStats}) => {
       await Storage.remove({key: "stravaTabSaveDisplay" + tab});
     }
     await Storage.remove({key: "stravaAppUserPrefs"});
-//    window.location.reload(true);
+    window.location.reload(true);
   }
 
   return (
