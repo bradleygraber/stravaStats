@@ -67,7 +67,6 @@ export default class StravaStats {
   }
 
   async init(code?:string) {
-//    console.log("stravaStats init - code=" + code);
     let savedStateString = await Storage.get({ key: 'stravaStatsState' })
 
     if (savedStateString.value !== null) {
@@ -110,6 +109,7 @@ export default class StravaStats {
         return json.json();
       else {
         window.history.pushState("", "", '/');
+        console.log("setting false");
         this.setLoggedIn("false");
       }
     })
@@ -124,6 +124,7 @@ export default class StravaStats {
     });
   }
   async refreshAccessToken() {
+    console.log("refreshAccessToken")
     let accessInfoObj = this.loginData;
 
     let expireDate = new Date(accessInfoObj.expires_at*1000);
@@ -159,7 +160,7 @@ export default class StravaStats {
   }
 
   async saveState() {
-    Storage.set({key: "stravaStatsState", value: JSON.stringify(
+    return Storage.set({key: "stravaStatsState", value: JSON.stringify(
       {
         loginData: this.loginData,
         activities: this.activities,
