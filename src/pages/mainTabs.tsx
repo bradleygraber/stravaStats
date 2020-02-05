@@ -1,12 +1,16 @@
 import { IonTabs, IonTabBar, IonIcon, IonLabel, IonTabButton, IonRouterOutlet } from '@ionic/react';
 import { IonReactRouter } from '@ionic/react-router';
 import React, { useEffect } from 'react';
-import { flash } from 'ionicons/icons';
+import { aperture, bicycle, flash, walk } from 'ionicons/icons';
 import { Route, Redirect } from 'react-router';
 import StravaTab from './StravaTab';
 import { StateProps } from '../data/state';
 
 const MainTabs: React.FC<StateProps> = ({darkMode, stravaStats}) => {
+
+interface StringIter {
+  [index: string]: any,
+}
 
 
   useEffect(() => {
@@ -14,6 +18,12 @@ const MainTabs: React.FC<StateProps> = ({darkMode, stravaStats}) => {
 //    processActivities(activities.get(), processActivitiesState);
     // eslint-disable-next-line
   }, []);
+
+  let icons: StringIter = {
+    All: aperture,
+    Ride: bicycle,
+    Run: walk,
+  }
 
   let tabs = [];
   let ros = [];
@@ -23,7 +33,13 @@ const MainTabs: React.FC<StateProps> = ({darkMode, stravaStats}) => {
     ros.push(<Route key={tab} path={ref} render={props => {
       return <StravaTab {...props} {...{stravaStats, darkMode} }/>
     }} />)
-    tabs.push(<IonTabButton key={tab} tab={tab} href={ref}><IonIcon icon={flash}/><IonLabel>{name}</IonLabel></IonTabButton>)
+    tabs.push(
+      <IonTabButton key={tab} tab={tab} href={ref}>
+        <IonIcon
+        icon={icons[tab] ? icons[tab] : flash}
+        />
+        <IonLabel>{name}</IonLabel>
+      </IonTabButton>)
   }
 
   return (
