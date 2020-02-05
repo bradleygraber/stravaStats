@@ -20,7 +20,7 @@ const StravaTab: React.FC<StravaTabProps> = ({stravaStats, match, darkMode}) => 
     tab = tab[1];
 
   let [displayStat, setDisplayStat] = useState("Distance");
-  let [displayBy, setDisplayBy] = useState("By State");
+  let [displayBy, setDisplayBy] = useState("By Year");
 
   let totals = stravaStats.getTotals();
   let stats: string[] = [];
