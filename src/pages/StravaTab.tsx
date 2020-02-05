@@ -49,7 +49,7 @@ const StravaTab: React.FC<StravaTabProps> = ({stravaStats, match, darkMode}) => 
 
   let getDisplaySettings = async ()=>{
     let displaySettingsString = await Storage.get({ key: 'stravaTabSaveDisplay'+tab });
-    let displaySettings = displaySettingsString.value ? JSON.parse(displaySettingsString.value) : {displayStat: stats[0], displayBy: by[0]};
+    let displaySettings = displaySettingsString.value ? JSON.parse(displaySettingsString.value) : {displayStat: stats[0], displayBy: by[1]};
     setDisplayStat(displaySettings.displayStat);
     setDisplayBy(displaySettings.displayBy);
   }
