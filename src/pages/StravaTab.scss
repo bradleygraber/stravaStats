@@ -1,8 +1,11 @@
 .strava-list-item {
-  margin-top: 10px !important;
-  max-width: 400px;
-  border: 1px solid grey;
-  border-radius: 10px;
+}
+.strava-list-item {
+//  --background: linear-gradient(to left, #cecece, #c5c5c5, #bcbcbc, #b3b3b3, #aaaaaa);
+//  --background: linear-gradient(to right top, #e0e0e0, #dedfde, #dddddd, #dbdcdb, #dadada);
+}
+.light-theme {
+  --background: linear-gradient(to left bottom, #e0e0e0, #dedfde, #dddddd, #dbdcdb, #dadada);
 }
 
 .test {

@@ -123,7 +123,7 @@ const App: React.FC = () => {
   }, [finishedProcessing])
 
   return (
-  <IonApp id="stravaStatsApp" className={darkMode ? "dark-theme" : "bg-class"}>
+  <IonApp id="stravaStatsApp" className={darkMode ? "dark-theme" : ""}>
     <IonReactRouter>
         <Menu {...state}/>
         <IonRouterOutlet id="main">

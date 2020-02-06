@@ -12,6 +12,10 @@ http://ionicframework.com/docs/theming/ */
   --ion-color-tint: var(--ion-color-stravaorange-tint);
 }
 
+.bg-class{
+  --background: linear-gradient(197deg, rgba(100,100,100,1) 0%, rgba(63,63,63,1) 13.5%, rgba(29,29,29,1) 33.33%, rgba(0,0,0,1) 100%) !important;
+}
+
 
 :root {
   /** stravaorange **/
@@ -93,6 +97,7 @@ http://ionicframework.com/docs/theming/ */
   --ion-color-light-shade: #d7d8da;
   --ion-color-light-tint: #f5f6f9;
 }
+
 .dark-theme {
   --ion-color-primary: #428cff;
   --ion-color-primary-rgb: 66,140,255;
@@ -157,6 +162,7 @@ http://ionicframework.com/docs/theming/ */
   --ion-color-light-shade: #1e2023;
   --ion-color-light-tint: #383a3e;
 }
+
 
 /*
  * iOS Dark Theme

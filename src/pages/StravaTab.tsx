@@ -1,8 +1,8 @@
-import { IonPage, IonHeader, IonToolbar, IonMenuButton, IonTitle, IonIcon,
+import { IonPage, IonHeader, IonToolbar, IonMenuButton, IonTitle, IonIcon, IonCard,
   IonButtons, IonContent, IonSelect, IonSelectOption, IonGrid, IonRow, IonCol} from '@ionic/react';
 import { star } from 'ionicons/icons';
 
-import DataTable from 'react-data-table-component';
+import DataTable, {createTheme} from 'react-data-table-component';
 
 import React, { useState, useEffect } from 'react';
 import { RouteComponentProps } from 'react-router';
@@ -27,6 +27,9 @@ const StravaTab: React.FC<StravaTabProps> = ({stravaStats, match, darkMode}) => 
   let by: string[] = [];
   for (let line in totals.stats) { stats.push(capitalize(line)); }
   for (let line in totals.by) { by.push(capitalize(totals.by[line])); }
+
+  console.log(stats)
+  console.log(by)
 
   function capitalize (s: string) {
     if (typeof s !== 'string') return '';
@@ -98,8 +101,37 @@ const StravaTab: React.FC<StravaTabProps> = ({stravaStats, match, darkMode}) => 
   }
   let total = stravaStats.finalTotals[tab][displayStat.toLowerCase() + displayBy.replace(/\s/g, '')];
 
+  createTheme('transparent', {
+    text: {
+      primary: '#268bd2',
+      secondary: '#2aa198',
+    },
+    background: {
+      default: "transparent",
+    },
+    context: {
+      background: '#cb4b16',
+      text: '#FFFFFF',
+    },
+    divider: {
+      default: '#073642',
+    },
+    action: {
+      button: 'rgba(0,0,0,.54)',
+      hover: 'rgba(0,0,0,.08)',
+      disabled: 'rgba(0,0,0,.12)',
+    },
+  });
+  let customStyles = {
+    subHeader: {
+        style: {
+          minHeight: '1px',
+        },
+      },
+  }
+
   return (
-    <IonPage className="dark-theme">
+    <IonPage>
       <IonHeader>
         <IonToolbar>
           <IonButtons slot="start">
@@ -109,7 +141,8 @@ const StravaTab: React.FC<StravaTabProps> = ({stravaStats, match, darkMode}) => 
         </IonToolbar>
       </IonHeader>
       <IonContent>
-        <IonGrid class="strava-list-item">
+        <IonCard class={darkMode.get() ? "strava-list-item" : "strava-list-item light-theme"}>
+        <IonGrid>
           <IonRow>
             <IonCol>
               <IonSelect selectedText={displayStat} interface="popover" onIonChange={statsSelectionChanged} >
@@ -130,22 +163,24 @@ const StravaTab: React.FC<StravaTabProps> = ({stravaStats, match, darkMode}) => 
           </IonRow>
           <IonRow>
             <IonCol>
-              <DataTable
-                theme={darkMode.get() ? "dark" : "light"}
-                title={`Total: ${total}`}
-                subHeader={displayStat !== "Speed"}
-                subHeaderComponent={`Total: ${total}`}
-                subHeaderAlign={"center"}
-                columns={columns}
-                data={displayList}
-                noHeader={true}
-                noTableHead={true}
-                dense={true}
-                highlightOnHover={true}
-              />
+                <DataTable
+                  theme={"transparent"}
+                  title={`Total: ${total}`}
+                  subHeader={displayStat !== "Speed"}
+                  subHeaderComponent={`Total: ${total}`}
+                  subHeaderAlign={"center"}
+                  columns={columns}
+                  data={displayList}
+                  noHeader={true}
+                  noTableHead={true}
+                  dense={true}
+                  highlightOnHover={true}
+                  customStyles={customStyles}
+                />
             </IonCol>
           </IonRow>
         </IonGrid>
+        </IonCard>
       </IonContent>
     </IonPage>
   );
