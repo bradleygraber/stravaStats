@@ -110,6 +110,7 @@ export default class StravaStats {
       else {
         window.history.pushState("", "", '/');
         console.log("setting false");
+        this.clearStoredData();
         this.setLoggedIn("false");
       }
     })
@@ -147,7 +148,12 @@ export default class StravaStats {
     }
     return await fetch(url, options)
     .then((json) => {
-      return json.json();
+      if (json.status === 200)
+        return json.json();
+      else if (json.status === 401) {
+        this.clearStoredData();
+        this.setLoggedIn("false");
+      }
     })
     .then((data) => {
       if (!data) {
@@ -197,10 +203,12 @@ export default class StravaStats {
     .then((json) => {
       if (json.status === 200)
         return json.json();
+      else if (json.status === 401) {
+        this.clearStoredData();
+        this.setLoggedIn("false");
+      }
       else {
-        console.log(numOfAttempts);
         console.log("failed to retrieve activities");
-        console.log(json);
         if (numOfAttempts && numOfAttempts > 3) {
           console.log("failed more than 3 times");
           this.setLoadingNumber(numOfAttempts ? numOfAttempts * -1: -1);

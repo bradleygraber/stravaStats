@@ -28,9 +28,6 @@ const StravaTab: React.FC<StravaTabProps> = ({stravaStats, match, darkMode}) => 
   for (let line in totals.stats) { stats.push(capitalize(line)); }
   for (let line in totals.by) { by.push(capitalize(totals.by[line])); }
 
-  console.log(stats)
-  console.log(by)
-
   function capitalize (s: string) {
     if (typeof s !== 'string') return '';
     s = s.replace(/([A-Z])/g, ' $1').trim();

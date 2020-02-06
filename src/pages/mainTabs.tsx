@@ -14,7 +14,6 @@ interface StringIter {
 
 
   useEffect(() => {
-    console.log(stravaStats.getTotals());
 //    processActivities(activities.get(), processActivitiesState);
     // eslint-disable-next-line
   }, []);
