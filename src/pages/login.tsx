@@ -4,7 +4,10 @@ import { StateProps } from '../data/state'
 
 const Login: React.FC<StateProps> = () => {
   console.log("entering login");
-  let redirect_uri = "http://localhost:8100/auth/"
+
+  let arr = window.location.href.split("/");
+  let redirect_uri = arr[0] + "//" + arr[2] + "/auth";
+
   let loginLink = "https://www.strava.com/oauth/authorize?client_id=41457&redirect_uri=" + redirect_uri + "&response_type=code&approval_prompt=auto&scope=activity:read_all";
   let imgSrc = "/assets/strava_transparent_button.png"
 
