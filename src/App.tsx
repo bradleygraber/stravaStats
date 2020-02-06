@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Route } from 'react-router-dom';
-import { IonApp, IonRouterOutlet, IonPage } from '@ionic/react';
+import { IonApp, IonRouterOutlet, IonPage, IonContent, IonCard, IonLabel } from '@ionic/react';
 import { IonReactRouter } from '@ionic/react-router';
+import checkOnlineStatus from 'is-online';
 import './App.scss';
 
 import Login from './pages/login';
@@ -39,16 +40,19 @@ const { Storage } = Plugins;
 
 const App: React.FC = () => {
 //  console.log("rendering");
-  let [darkMode, setDarkMode] = useState(false);
+
+  // State Variables
   let [loggedIn, setLoggedIn] = useState("loading");
+  let [online, setOnline] = useState("loading");
+  let [darkMode, setDarkMode] = useState(false);
   let [finishedProcessing, setFinishedProcessing] = useState(false);
   let [finishedDownloading, setFinishedDownloading] = useState(false);
   let [loadingNumber, setLoadingNumber] = useState(-1);
   let loadingElement = useState(document.createElement('ion-loading'))[0];
   loadingElement.id = "loadingElement";
 
-  // eslint-disable-next-line
-  let [stravaStats, setStravaStats] = useState(new StravaStats(setLoggedIn, setFinishedDownloading, setFinishedProcessing, setLoadingNumber, getUrlParameter("code")));
+  let stravaStats = useState(new StravaStats(setLoggedIn, setFinishedDownloading, setFinishedProcessing, setLoadingNumber, getUrlParameter("code")))[0];
+
 
   let getUserPrefs = async ()=>{
     let userPrefs = await Storage.get({ key: 'stravaAppUserPrefs' });
@@ -69,17 +73,33 @@ const App: React.FC = () => {
   }, []);
 
   useEffect(() => {
+    let setOnlineStatus = async () => {
+      let isOnline:boolean = await checkOnlineStatus();
+      if (isOnline)
+        setOnline("true")
+      else {
+        setOnline("false")
+        setTimeout(() => {
+          setOnlineStatus();
+        }, 1000)
+      }
+    };
+    if (online === "loading" || online === "false") {
+      setOnlineStatus();
+    }
+  }, [online]);
+
+  useEffect(() => {
     saveUserPrefs(darkMode);
   }, [darkMode]);
 
   useEffect(() => {
-//    console.log("logged in=" + loggedIn);
-    if (loggedIn === "true") {
+    if (loggedIn === "true" && online === "true") {
       document.body.appendChild(loadingElement);
       setLoadingNumber(0);
       stravaStats.getActivities();
     }
-  }, [loggedIn, stravaStats, loadingElement]);
+  }, [loggedIn, stravaStats, loadingElement, online]);
 
   useEffect(() => {
     if (loadingNumber >= 0 && !finishedDownloading) {
@@ -105,14 +125,6 @@ const App: React.FC = () => {
     }
   }, [loadingNumber, loadingElement, finishedDownloading]);
 
-/**
-  useEffect(() => {
-    console.log("saving state");
-    saveStateToStorage(state);
-  }, [state]);
-**/
-
-
   useEffect(() => {
     if (finishedProcessing) {
       let remove = document.getElementById("loadingElement");
@@ -128,13 +140,20 @@ const App: React.FC = () => {
         <Menu {...state}/>
         <IonRouterOutlet id="main">
           <Route path="/" render={props => {
-            if (loggedIn === "false")
-              return <Login {...props} {...state} />;
-            else if (loggedIn === "true" && finishedProcessing) {
-              return <MainTabs {...props} {...state} />;
+            if (online === "true") {
+              if (loggedIn === "false")
+                return <Login {...props} {...state} />;
+              else if (loggedIn === "true" && finishedProcessing) {
+                return <MainTabs {...props} {...state} />;
+              }
+              else {
+  //              console.log("empty page");
+                return <IonPage></IonPage>;
+              }
             }
             else {
-//              console.log("empty page");
+              if (online === "false")
+                return <IonPage><IonContent><IonCard><IonLabel>No Connection Detected</IonLabel></IonCard></IonContent></IonPage>
               return <IonPage></IonPage>;
             }
           }}/>
