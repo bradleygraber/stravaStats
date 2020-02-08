@@ -1,20 +1,20 @@
-import { IonPage, IonHeader, IonToolbar, IonMenuButton, IonTitle, IonIcon, IonCard,
+import { IonPage, IonHeader, IonToolbar, IonMenuButton, IonTitle, IonIcon, IonCard, IonText,
   IonButtons, IonContent, IonSelect, IonSelectOption, IonGrid, IonRow, IonCol} from '@ionic/react';
 import { star } from 'ionicons/icons';
+import './StravaTab.scss';
 
 import DataTable, {createTheme} from 'react-data-table-component';
 
 import React, { useState, useEffect } from 'react';
 import { RouteComponentProps } from 'react-router';
 import { StateProps } from '../data/state';
-import './StravaTab.scss';
 
 import { Plugins } from '@capacitor/core';
 const { Storage } = Plugins;
 
 interface StravaTabProps extends RouteComponentProps, StateProps { };
 
-const StravaTab: React.FC<StravaTabProps> = ({stravaStats, match, darkMode}) => {
+const StravaTab: React.FC<StravaTabProps> = ({stravaStats, match, darkMode, colors}) => {
   let tab:any = match.path.match(/\w+/g);
   if (tab)
     tab = tab[1];
@@ -100,29 +100,25 @@ const StravaTab: React.FC<StravaTabProps> = ({stravaStats, match, darkMode}) => 
 
   createTheme('transparent', {
     text: {
-      primary: '#268bd2',
+      primary: colors.get()["--ion-color-step-550"],
       secondary: '#2aa198',
     },
     background: {
       default: "transparent",
     },
-    context: {
-      background: '#cb4b16',
-      text: '#FFFFFF',
-    },
     divider: {
-      default: '#073642',
+      default: colors.get()["--ion-color-step-550"],
     },
-    action: {
-      button: 'rgba(0,0,0,.54)',
-      hover: 'rgba(0,0,0,.08)',
-      disabled: 'rgba(0,0,0,.12)',
+    highlightOnHover: {
+      default: '#efefef',
+      text: '#232323',
     },
   });
   let customStyles = {
     subHeader: {
         style: {
           minHeight: '1px',
+          color: colors.get()["--ion-color-step-550"]
         },
       },
   }
@@ -138,24 +134,28 @@ const StravaTab: React.FC<StravaTabProps> = ({stravaStats, match, darkMode}) => 
         </IonToolbar>
       </IonHeader>
       <IonContent>
-        <IonCard class={darkMode.get() ? "strava-list-item" : "strava-list-item light-theme"}>
+        <IonCard class="list">
         <IonGrid>
           <IonRow>
             <IonCol>
-              <IonSelect selectedText={displayStat} interface="popover" onIonChange={statsSelectionChanged} >
+              <IonText>
+              <IonSelect selectedText={displayStat} interface="alert" onIonChange={statsSelectionChanged} >
                 {stats.map((value, index) => {
                   let selected = value === displayStat ? true : false;
                   return <IonSelectOption selected={selected} key={index} value={value}>{value}</IonSelectOption>;
                 })}
               </IonSelect>
+              </IonText>
             </IonCol>
             <IonCol>
-              <IonSelect selectedText={displayBy} interface="popover" onIonChange={bySelectionChanged}>
+              <IonText>
+              <IonSelect selectedText={displayBy} interface="alert" onIonChange={bySelectionChanged}>
                 {by.map((value, index) => {
                   let selected = value === displayBy ? true : false;
                   return <IonSelectOption selected={selected} key={index} value={value}>{value}</IonSelectOption>;
                 })}
               </IonSelect>
+              </IonText>
             </IonCol>
           </IonRow>
           <IonRow>

@@ -1,21 +1,4 @@
-.strava-list-item {
-}
-.strava-list-item {
-//  --background: linear-gradient(to left, #cecece, #c5c5c5, #bcbcbc, #b3b3b3, #aaaaaa);
-//  --background: linear-gradient(to right top, #e0e0e0, #dedfde, #dddddd, #dbdcdb, #dadada);
-}
-.light-theme {
-  --background: linear-gradient(to left bottom, #e0e0e0, #dedfde, #dddddd, #dbdcdb, #dadada);
-}
-
-.test {
-
-}
-
-.tableGrid {
-}
-.tableRow {
-}
-.tableCell {
-  background-color: red;
+.list {
+  background: linear-gradient(to bottom right, var(--ion-color-step-150) 0%, var(--ion-color-step-200) 100%);
+  color: var(--ion-color-step-550);
 }

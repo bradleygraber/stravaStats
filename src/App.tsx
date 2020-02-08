@@ -14,7 +14,6 @@ import { StateProps } from './data/state'
 import { getUrlParameter } from './util/util';
 import StravaStats from './data/stravaStats';
 
-
 /* Core CSS required for Ionic components to work properly */
 import '@ionic/react/css/core.css';
 
@@ -31,18 +30,23 @@ import '@ionic/react/css/text-transformation.css';
 import '@ionic/react/css/flex-utils.css';
 import '@ionic/react/css/display.css';
 
-/* Theme variables */
-import './theme/variables.css';
-
 import { Plugins } from '@capacitor/core';
+
+/* Theme variables */
+//import './theme/variables.css';
+import setTheme, { blueTheme, darkTheme } from './theme/themeGenerator';
+const lightTheme = blueTheme;
+
+
 const { Storage } = Plugins;
 
-
 const App: React.FC = () => {
+
 //  console.log("rendering");
 
   // State Variables
   let [loggedIn, setLoggedIn] = useState("loading");
+  let [colors, setColors] = useState({});
   let [online, setOnline] = useState("loading");
   let [darkMode, setDarkMode] = useState(false);
   let [finishedProcessing, setFinishedProcessing] = useState(false);
@@ -65,7 +69,8 @@ const App: React.FC = () => {
 
   let state:StateProps = {
     darkMode: {get: ()=>darkMode, set: setDarkMode},
-    stravaStats: stravaStats
+    stravaStats: stravaStats,
+    colors: {get: ()=>colors, set: setColors}
   };
 
   useEffect(() => {
@@ -91,6 +96,9 @@ const App: React.FC = () => {
 
   useEffect(() => {
     saveUserPrefs(darkMode);
+    let localColors:any = darkMode ? setTheme(darkTheme, true) : setTheme(lightTheme);
+
+    setColors(localColors);
   }, [darkMode]);
 
   useEffect(() => {
