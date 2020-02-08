@@ -37,7 +37,7 @@ export const Menu: React.FC<StateProps> = ({theme, stravaStats}) => {
           </IonItem>
           <IonItem>
             <IonLabel>Theme</IonLabel>
-            <IonSelect selectedText={theme.get().name} interface="alert" onIonChange={themeSelectionChanged} >
+            <IonSelect selectedText={theme.get().name} interface="popover" onIonChange={themeSelectionChanged} >
               {themePack.map((t, index) => {
                 let selected = t.name === theme.get().name ? true : false;
                 return <IonSelectOption selected={selected} key={index} value={index}>{t.name}</IonSelectOption>;

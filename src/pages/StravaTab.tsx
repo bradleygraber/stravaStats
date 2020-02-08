@@ -134,46 +134,52 @@ const StravaTab: React.FC<StravaTabProps> = ({stravaStats, match, darkMode, colo
         </IonToolbar>
       </IonHeader>
       <IonContent>
-        <IonCard class="list">
         <IonGrid>
           <IonRow>
-            <IonCol>
-              <IonSelect selectedText={displayStat} interface="alert" onIonChange={statsSelectionChanged} >
-                {stats.map((value, index) => {
-                  let selected = value === displayStat ? true : false;
-                  return <IonSelectOption selected={selected} key={index} value={value}>{value}</IonSelectOption>;
-                })}
-              </IonSelect>
-            </IonCol>
-            <IonCol>
-              <IonSelect selectedText={displayBy} interface="alert" onIonChange={bySelectionChanged}>
-                {by.map((value, index) => {
-                  let selected = value === displayBy ? true : false;
-                  return <IonSelectOption selected={selected} key={index} value={value}>{value}</IonSelectOption>;
-                })}
-              </IonSelect>
-            </IonCol>
-          </IonRow>
-          <IonRow>
-            <IonCol>
-                <DataTable
-                  theme={"transparent"}
-                  title={`Total: ${total}`}
-                  subHeader={displayStat !== "Speed"}
-                  subHeaderComponent={`Total: ${total}`}
-                  subHeaderAlign={"center"}
-                  columns={columns}
-                  data={displayList}
-                  noHeader={true}
-                  noTableHead={true}
-                  dense={true}
-                  highlightOnHover={true}
-                  customStyles={customStyles}
-                />
+            <IonCol class="listContainer">
+            <IonCard class="list">
+            <IonGrid>
+              <IonRow>
+                <IonCol>
+                  <IonSelect selectedText={displayStat} interface="popover" onIonChange={statsSelectionChanged} >
+                    {stats.map((value, index) => {
+                      let selected = value === displayStat ? true : false;
+                      return <IonSelectOption selected={selected} key={index} value={value}>{value}</IonSelectOption>;
+                    })}
+                  </IonSelect>
+                </IonCol>
+                <IonCol>
+                  <IonSelect selectedText={displayBy} interface="popover" onIonChange={bySelectionChanged}>
+                    {by.map((value, index) => {
+                      let selected = value === displayBy ? true : false;
+                      return <IonSelectOption selected={selected} key={index} value={value}>{value}</IonSelectOption>;
+                    })}
+                  </IonSelect>
+                </IonCol>
+              </IonRow>
+              <IonRow>
+                <IonCol>
+                    <DataTable
+                      theme={"transparent"}
+                      title={`Total: ${total}`}
+                      subHeader={displayStat !== "Speed"}
+                      subHeaderComponent={`Total: ${total}`}
+                      subHeaderAlign={"center"}
+                      columns={columns}
+                      data={displayList}
+                      noHeader={true}
+                      noTableHead={true}
+                      dense={true}
+                      highlightOnHover={true}
+                      customStyles={customStyles}
+                    />
+                </IonCol>
+              </IonRow>
+            </IonGrid>
+            </IonCard>
             </IonCol>
           </IonRow>
         </IonGrid>
-        </IonCard>
       </IonContent>
     </IonPage>
   );
