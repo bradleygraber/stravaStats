@@ -126,7 +126,7 @@ const StravaTab: React.FC<StravaTabProps> = ({stravaStats, match, darkMode, colo
   return (
     <IonPage>
       <IonHeader>
-        <IonToolbar>
+        <IonToolbar mode="ios">
           <IonButtons slot="start">
             <IonMenuButton></IonMenuButton>
           </IonButtons>
