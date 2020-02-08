@@ -1,4 +1,6 @@
 import Color from 'color';
+import TinyColor from 'tinycolor2';
+
 interface StringIter {
   [index: string]: any,
 }
@@ -8,17 +10,39 @@ interface StringIter {
 export const defaultTheme = {
   "name": "Default",
 }
+export const darkTheme = {
+  "name": "Dark",
+  "text": "#ffffff",
+  "background": "#000000",
+  "primary": "#ffffff"
+}
+
 
 export const blueTheme = {
   "name": "Blue",
   "text": "#268bd2",
 }
-export const darkTheme = {
-  "name": "Dark",
+export const darkBlueTheme = {
+  "name": "Dark Blue",
+  "text": "#59bef5",
+  "background": "#000000",
+  "primary": "#59bef5"
+}
+
+export const redTheme = {
+  "name": "Red",
+  "text": "#d8268b",
+  "primary": "#d8268b"
+}
+export const darkRedTheme = {
+  "name": "Dark Red",
+  "text": "#d8268b",
+  "background" : "#000000",
+  "primary": "#d8268b"
 }
 
 export const themePack = [
-  defaultTheme, blueTheme, darkTheme
+  defaultTheme, darkTheme, redTheme, blueTheme, darkBlueTheme, darkRedTheme
 ]
 
 function mix(c1:string, c2:string, ratio:number) {
@@ -26,10 +50,12 @@ function mix(c1:string, c2:string, ratio:number) {
   return color.mix(Color(c2), ratio).hex();
 }
 
-function contrast(color:any, ratio = 0.8) {
-  color = Color(color);
+function contrast(color:any, ratio?: number) {
+  ratio = ratio ? ratio : 80;
+  color = TinyColor(color);
   return color.isDark() ? color.lighten(ratio) : color.darken(ratio);
 }
+
 function hexToRgb(hex: string) {
   var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
   return result ? parseInt(result[1], 16).toString() + "," +
@@ -37,7 +63,7 @@ function hexToRgb(hex: string) {
                   parseInt(result[3], 16) : "";
 }
 
-export default function setTheme(colors: any, darkMode?: boolean) {
+export default function setTheme(colors: any) {
   let defaults = {
     primary: '#268bd2',
     secondary: '#0cd1e8',
@@ -49,16 +75,8 @@ export default function setTheme(colors: any, darkMode?: boolean) {
     medium: '#989aa2',
     light: '#f4f4f4',
     background: '#ffffff',
-//    background: "#232526",
     text: '#121212',
   };
-  if (darkMode) {
-    defaults.light = contrast(defaults.light);
-    defaults.medium = contrast(defaults.medium);
-    defaults.dark = contrast(defaults.dark);
-    defaults.background = "#000000";
-    defaults.text = "#ededed";
-  }
 
   colors = { ...defaults, ...colors };
 
@@ -94,12 +112,12 @@ export default function setTheme(colors: any, darkMode?: boolean) {
       "--ion-tab-bar-background": "",
       "--ion-tab-bar-background-focused": "",
       "--ion-tab-bar-border-color": primary,
-      "--ion-tab-bar-color": "",
+      "--ion-tab-bar-color": contrast(background, 40),
       "--ion-tab-bar-color-activated": primary,
 
 //      "--ion-toolbar-background": primary,
       "--ion-toolbar-border-color": "",
-//      "--ion-toolbar-color": contrast(primary).hex(),
+//      "--ion-toolbar-color": contrast(primary),
       "--ion-toolbar-color-activated": "",
       "--ion-toolbar-color-unchecked": "",
       "--ion-toolbar-color-checked": "",
@@ -112,64 +130,64 @@ export default function setTheme(colors: any, darkMode?: boolean) {
 
       "--ion-color-primary": primary,
       "--ion-color-primary-rgb": hexToRgb(primary),
-      "--ion-color-primary-contrast": contrast(primary).hex(),
-      "--ion-color-primary-contrast-rgb": hexToRgb(contrast(primary).hex()),
+      "--ion-color-primary-contrast": contrast(primary),
+      "--ion-color-primary-contrast-rgb": hexToRgb(contrast(primary)),
       "--ion-color-primary-shade":  Color(primary).darken(shadeRatio).hex(),
       "--ion-color-primary-tint":  Color(primary).lighten(tintRatio).hex(),
 
       "--ion-color-secondary": secondary,
       "--ion-color-secondary-rgb": hexToRgb(secondary),
-      "--ion-color-secondary-contrast": contrast(secondary).hex(),
-      "--ion-color-secondary-contrast-rgb": hexToRgb(contrast(secondary).hex()),
+      "--ion-color-secondary-contrast": contrast(secondary),
+      "--ion-color-secondary-contrast-rgb": hexToRgb(contrast(secondary)),
       "--ion-color-secondary-shade":  Color(secondary).darken(shadeRatio).hex(),
       "--ion-color-secondary-tint": Color(secondary).lighten(tintRatio).hex(),
 
       "--ion-color-tertiary":  tertiary,
       "--ion-color-tertiary-rgb": hexToRgb(tertiary),
-      "--ion-color-tertiary-contrast": contrast(tertiary).hex(),
-      "--ion-color-tertiary-contrast-rgb": hexToRgb(contrast(tertiary).hex()),
+      "--ion-color-tertiary-contrast": contrast(tertiary),
+      "--ion-color-tertiary-contrast-rgb": hexToRgb(contrast(tertiary)),
       "--ion-color-tertiary-shade": Color(tertiary).darken(shadeRatio).hex(),
       "--ion-color-tertiary-tint":  Color(tertiary).lighten(tintRatio).hex(),
 
       "--ion-color-success": success,
       "--ion-color-success-rgb": hexToRgb(success),
-      "--ion-color-success-contrast": contrast(success).hex(),
-      "--ion-color-success-contrast-rgb": hexToRgb(contrast(success).hex()),
+      "--ion-color-success-contrast": contrast(success),
+      "--ion-color-success-contrast-rgb": hexToRgb(contrast(success)),
       "--ion-color-success-shade": Color(success).darken(shadeRatio).hex(),
       "--ion-color-success-tint": Color(success).lighten(tintRatio).hex(),
 
       "--ion-color-warning": warning,
       "--ion-color-warning-rgb": hexToRgb(warning),
-      "--ion-color-warning-contrast": contrast(warning).hex(),
-      "--ion-color-warning-contrast-rgb": hexToRgb(contrast(warning).hex()),
+      "--ion-color-warning-contrast": contrast(warning),
+      "--ion-color-warning-contrast-rgb": hexToRgb(contrast(warning)),
       "--ion-color-warning-shade": Color(warning).darken(shadeRatio).hex(),
       "--ion-color-warning-tint": Color(warning).lighten(tintRatio).hex(),
 
       "--ion-color-danger": danger,
       "--ion-color-danger-rgb": hexToRgb(danger),
-      "--ion-color-danger-contrast": contrast(danger).hex(),
-      "--ion-color-danger-contrast-rgb": hexToRgb(contrast(danger).hex()),
+      "--ion-color-danger-contrast": contrast(danger),
+      "--ion-color-danger-contrast-rgb": hexToRgb(contrast(danger)),
       "--ion-color-danger-shade": Color(danger).darken(shadeRatio).hex(),
       "--ion-color-danger-tint": Color(danger).lighten(tintRatio).hex(),
 
       "--ion-color-dark": dark,
       "--ion-color-dark-rgb": hexToRgb(dark),
-      "--ion-color-dark-contrast": contrast(dark).hex(),
-      "--ion-color-dark-contrast-rgb": hexToRgb(contrast(dark).hex()),
+      "--ion-color-dark-contrast": contrast(dark),
+      "--ion-color-dark-contrast-rgb": hexToRgb(contrast(dark)),
       "--ion-color-dark-shade": Color(dark).darken(shadeRatio).hex(),
       "--ion-color-dark-tint": Color(dark).lighten(tintRatio).hex(),
 
       "--ion-color-medium": medium,
       "--ion-color-medium-rgb": hexToRgb(medium),
-      "--ion-color-medium-contrast": contrast(medium).hex(),
-      "--ion-color-medium-contrast-rgb": hexToRgb(contrast(medium).hex()),
+      "--ion-color-medium-contrast": contrast(medium),
+      "--ion-color-medium-contrast-rgb": hexToRgb(contrast(medium)),
       "--ion-color-medium-shade": Color(medium).darken(shadeRatio).hex(),
       "--ion-color-medium-tint": Color(medium).lighten(tintRatio).hex(),
 
       "--ion-color-light": light,
       "--ion-color-light-rgb": hexToRgb(light),
-      "--ion-color-light-contrast": contrast(light).hex(),
-      "--ion-color-light-contrast-rgb": hexToRgb(contrast(light).hex()),
+      "--ion-color-light-contrast": contrast(light),
+      "--ion-color-light-contrast-rgb": hexToRgb(contrast(light)),
       "--ion-color-light-shade": Color(light).darken(shadeRatio).hex(),
       "--ion-color-light-tint": Color(light).lighten(tintRatio).hex(),
   };
