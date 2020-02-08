@@ -1,6 +1,6 @@
 import React from 'react';
 import { IonMenu, IonHeader, IonToolbar, IonTitle, IonContent, IonList, IonSelect, IonSelectOption,
-          IonItem, IonIcon, IonLabel, IonToggle } from '@ionic/react';
+          IonItem, IonIcon, IonLabel } from '@ionic/react';
 import { alert } from 'ionicons/icons';
 import { StateProps } from '../data/state'
 import { themePack } from '../theme/themeGenerator';
