@@ -33,7 +33,7 @@ import '@ionic/react/css/display.css';
 import { Plugins } from '@capacitor/core';
 
 /* Theme variables */
-//import './theme/variables.css';
+import './theme/variables.css';
 import applyTheme, { defaultTheme } from './theme/themeGenerator';
 
 const { Storage } = Plugins;
