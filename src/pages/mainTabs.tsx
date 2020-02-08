@@ -6,7 +6,7 @@ import { Route, Redirect } from 'react-router';
 import StravaTab from './StravaTab';
 import { StateProps } from '../data/state';
 
-const MainTabs: React.FC<StateProps> = ({darkMode, stravaStats}) => {
+const MainTabs: React.FC<StateProps> = ({darkMode, stravaStats, colors}) => {
 
 interface StringIter {
   [index: string]: any,
@@ -30,7 +30,7 @@ interface StringIter {
     let name = tab.charAt(0).toUpperCase() + tab.slice(1);
     let ref = `/tabs/${name}`;
     ros.push(<Route key={tab} path={ref} render={props => {
-      return <StravaTab {...props} {...{stravaStats, darkMode} }/>
+      return <StravaTab {...props} {...{stravaStats, darkMode, colors} }/>
     }} />)
     tabs.push(
       <IonTabButton key={tab} tab={tab} href={ref}>
