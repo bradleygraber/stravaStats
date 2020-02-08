@@ -61,7 +61,7 @@ const App: React.FC = () => {
     let userTheme:any = userPrefs.value ? JSON.parse(userPrefs.value) : defaultTheme;
     setTheme(userTheme);
   }
-  let saveUserPrefs = async ()=> {
+  let saveUserPrefs = async (theme: any)=> {
     Storage.set({key: "stravaAppUserPrefs", value: JSON.stringify(theme)});
   }
 
@@ -93,7 +93,7 @@ const App: React.FC = () => {
   }, [online]);
 
   useEffect(() => {
-    saveUserPrefs();
+    saveUserPrefs(theme);
     let newColors:any = applyTheme(theme);
 
     setColors(newColors);
