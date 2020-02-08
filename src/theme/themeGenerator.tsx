@@ -4,6 +4,7 @@ interface StringIter {
 }
 
 export const blueTheme = {
+  "text": "#268bd2",
 }
 export const darkTheme = {
 }
@@ -78,15 +79,15 @@ export default function setTheme(colors: any, darkMode?: boolean) {
       "--ion-border-color": "",
       "--ion-box-shadow-color": "",
 
-//      "--ion-tab-bar-background": light,
-//      "--ion-tab-bar-background-focused": "",
-//      "--ion-tab-bar-border-color": "",
-//      "--ion-tab-bar-color": contrast(light).hex(),
+      "--ion-tab-bar-background": "",
+      "--ion-tab-bar-background-focused": "",
+      "--ion-tab-bar-border-color": primary,
+      "--ion-tab-bar-color": "",
       "--ion-tab-bar-color-activated": primary,
 
-      "--ion-toolbar-background": primary,
+//      "--ion-toolbar-background": primary,
       "--ion-toolbar-border-color": "",
-      "--ion-toolbar-color": contrast(primary).hex(),
+//      "--ion-toolbar-color": contrast(primary).hex(),
       "--ion-toolbar-color-activated": "",
       "--ion-toolbar-color-unchecked": "",
       "--ion-toolbar-color-checked": "",
