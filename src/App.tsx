@@ -34,9 +34,7 @@ import { Plugins } from '@capacitor/core';
 
 /* Theme variables */
 //import './theme/variables.css';
-import setTheme, { blueTheme, darkTheme } from './theme/themeGenerator';
-const lightTheme = blueTheme;
-
+import applyTheme, { defaultTheme } from './theme/themeGenerator';
 
 const { Storage } = Plugins;
 
@@ -46,9 +44,9 @@ const App: React.FC = () => {
 
   // State Variables
   let [loggedIn, setLoggedIn] = useState("loading");
-  let [colors, setColors] = useState({});
+  let [colors, setColors] = useState(defaultTheme);
   let [online, setOnline] = useState("loading");
-  let [darkMode, setDarkMode] = useState(false);
+  let [theme, setTheme] = useState({});
   let [finishedProcessing, setFinishedProcessing] = useState(false);
   let [finishedDownloading, setFinishedDownloading] = useState(false);
   let [loadingNumber, setLoadingNumber] = useState(-1);
@@ -60,15 +58,15 @@ const App: React.FC = () => {
 
   let getUserPrefs = async ()=>{
     let userPrefs = await Storage.get({ key: 'stravaAppUserPrefs' });
-    let bool:boolean = userPrefs.value === "true" ? true : false;
-    setDarkMode(bool);
+    let userTheme:any = userPrefs.value ? JSON.parse(userPrefs.value) : defaultTheme;
+    setTheme(userTheme);
   }
-  let saveUserPrefs = async (darkMode: boolean)=> {
-    Storage.set({key: "stravaAppUserPrefs", value: darkMode.toString()});
+  let saveUserPrefs = async ()=> {
+    Storage.set({key: "stravaAppUserPrefs", value: JSON.stringify(theme)});
   }
 
   let state:StateProps = {
-    darkMode: {get: ()=>darkMode, set: setDarkMode},
+    theme: {get: ()=>theme, set: setTheme},
     stravaStats: stravaStats,
     colors: {get: ()=>colors, set: setColors}
   };
@@ -95,11 +93,11 @@ const App: React.FC = () => {
   }, [online]);
 
   useEffect(() => {
-    saveUserPrefs(darkMode);
-    let localColors:any = darkMode ? setTheme(darkTheme, true) : setTheme(lightTheme);
+    saveUserPrefs();
+    let newColors:any = applyTheme(theme);
 
-    setColors(localColors);
-  }, [darkMode]);
+    setColors(newColors);
+  }, [theme]);
 
   useEffect(() => {
     if (loggedIn === "true" && online === "true") {
@@ -143,7 +141,7 @@ const App: React.FC = () => {
   }, [finishedProcessing])
 
   return (
-  <IonApp id="stravaStatsApp" className={darkMode ? "dark-theme" : ""}>
+  <IonApp id="stravaStatsApp">
     <IonReactRouter>
         <Menu {...state}/>
         <IonRouterOutlet id="main">

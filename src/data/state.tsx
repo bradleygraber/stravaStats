@@ -21,7 +21,7 @@ export const saveStateToStorage = (state: StateProps) => {
 
 export interface StateProps {
   [index: string]: any,
-  darkMode: { get: () => boolean, set: (accessInfo: boolean) => void },
+  theme: { get: () => any, set: (theme: any) => void },
 //  activities: { get: () => any[], set: (activities: any[]) => void },
 }
 interface StringIter {

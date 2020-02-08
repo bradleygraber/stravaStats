@@ -3,11 +3,23 @@ interface StringIter {
   [index: string]: any,
 }
 
+
+
+export const defaultTheme = {
+  "name": "Default",
+}
+
 export const blueTheme = {
+  "name": "Blue",
   "text": "#268bd2",
 }
 export const darkTheme = {
+  "name": "Dark",
 }
+
+export const themePack = [
+  defaultTheme, blueTheme, darkTheme
+]
 
 function mix(c1:string, c2:string, ratio:number) {
   let color = Color(c1);

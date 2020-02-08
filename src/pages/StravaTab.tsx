@@ -1,4 +1,4 @@
-import { IonPage, IonHeader, IonToolbar, IonMenuButton, IonTitle, IonIcon, IonCard, IonText,
+import { IonPage, IonHeader, IonToolbar, IonMenuButton, IonTitle, IonIcon, IonCard,
   IonButtons, IonContent, IonSelect, IonSelectOption, IonGrid, IonRow, IonCol} from '@ionic/react';
 import { star } from 'ionicons/icons';
 import './StravaTab.scss';
@@ -138,24 +138,20 @@ const StravaTab: React.FC<StravaTabProps> = ({stravaStats, match, darkMode, colo
         <IonGrid>
           <IonRow>
             <IonCol>
-              <IonText>
               <IonSelect selectedText={displayStat} interface="alert" onIonChange={statsSelectionChanged} >
                 {stats.map((value, index) => {
                   let selected = value === displayStat ? true : false;
                   return <IonSelectOption selected={selected} key={index} value={value}>{value}</IonSelectOption>;
                 })}
               </IonSelect>
-              </IonText>
             </IonCol>
             <IonCol>
-              <IonText>
               <IonSelect selectedText={displayBy} interface="alert" onIonChange={bySelectionChanged}>
                 {by.map((value, index) => {
                   let selected = value === displayBy ? true : false;
                   return <IonSelectOption selected={selected} key={index} value={value}>{value}</IonSelectOption>;
                 })}
               </IonSelect>
-              </IonText>
             </IonCol>
           </IonRow>
           <IonRow>
