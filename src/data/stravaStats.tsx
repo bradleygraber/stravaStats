@@ -128,7 +128,7 @@ export default class StravaStats {
     console.log("refreshAccessToken")
     let accessInfoObj = this.loginData;
 
-    let expireDate = new Date(accessInfoObj.expires_at*1000);
+    let expireDate = accessInfoObj ? new Date(accessInfoObj.expires_at*1000) : new Date("1/1/2000");
     if (expireDate>new Date())
       return;
 
