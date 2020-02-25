@@ -100,14 +100,14 @@ const StravaTab: React.FC<StravaTabProps> = ({stravaStats, match, darkMode, colo
 
   createTheme('transparent', {
     text: {
-      primary: colors.get()["--ion-color-step-550"],
+      primary: colors.get()["--ion-text-color"],
       secondary: '#2aa198',
     },
     background: {
       default: "transparent",
     },
     divider: {
-      default: colors.get()["--ion-color-step-550"],
+      default: colors.get()["--ion-text-color"],
     },
     highlightOnHover: {
       default: '#efefef',
@@ -118,7 +118,7 @@ const StravaTab: React.FC<StravaTabProps> = ({stravaStats, match, darkMode, colo
     subHeader: {
         style: {
           minHeight: '1px',
-          color: colors.get()["--ion-color-step-550"]
+          color: colors.get()["--ion-text-color"]
         },
       },
   }
