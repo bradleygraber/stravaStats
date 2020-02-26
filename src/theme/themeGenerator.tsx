@@ -60,6 +60,7 @@ export const pinkTheme = {
   "text": "#d8268b",
   "primary": "#d8268b"
 }
+
 export const darkPinkTheme = {
   "name": "Dark Pink",
   "text": "#d8268b",
@@ -67,8 +68,15 @@ export const darkPinkTheme = {
   "primary": "#d8268b"
 }
 
+export const banana = {
+  "name": "Banana",
+  "text": "#E7E9BB",
+  "background" : "#403545",
+  "primary": "#E7E9BB"
+}
+
 export const themePack = [
-  defaultTheme, darkTheme, pinkTheme, blueTheme, darkBlueTheme, darkPinkTheme, steelGrey, juicyOrange, mojito, royal
+  defaultTheme, darkTheme, pinkTheme, blueTheme, darkBlueTheme, darkPinkTheme, steelGrey, juicyOrange, mojito, royal, banana
 ]
 
 function mix(c1:string, c2:string, ratio:number) {
