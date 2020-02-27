@@ -19,7 +19,7 @@ export const Menu: React.FC<StateProps> = ({theme, stravaStats}) => {
   }
 
   let themeSelectionChanged = (e: any) => {
-    theme.set(themePack[e.detail.value]);
+    theme.set(themePack.filter(prop => prop.name === e.detail.value)[0]);
   };
 
   return (
@@ -37,10 +37,9 @@ export const Menu: React.FC<StateProps> = ({theme, stravaStats}) => {
           </IonItem>
           <IonItem>
             <IonLabel>Theme</IonLabel>
-            <IonSelect selectedText={theme.get().name} interface="popover" onIonChange={themeSelectionChanged} >
+            <IonSelect value={theme.get().name} interface="popover" onIonChange={themeSelectionChanged} >
               {themePack.map((t, index) => {
-                let selected = t.name === theme.get().name ? true : false;
-                return <IonSelectOption selected={selected} key={index} value={index}>{t.name}</IonSelectOption>;
+                return <IonSelectOption key={index} value={t.name}>{t.name}</IonSelectOption>;
               })}
             </IonSelect>
           </IonItem>

@@ -141,18 +141,16 @@ const StravaTab: React.FC<StravaTabProps> = ({stravaStats, match, darkMode, colo
             <IonGrid>
               <IonRow>
                 <IonCol>
-                  <IonSelect selectedText={displayStat} interface="popover" onIonChange={statsSelectionChanged} >
+                  <IonSelect value={displayStat} interface="popover" onIonChange={statsSelectionChanged} >
                     {stats.map((value, index) => {
-                      let selected = value === displayStat ? true : false;
-                      return <IonSelectOption selected={selected} key={index} value={value}>{value}</IonSelectOption>;
+                      return <IonSelectOption key={index} value={value}>{value}</IonSelectOption>;
                     })}
                   </IonSelect>
                 </IonCol>
                 <IonCol>
-                  <IonSelect selectedText={displayBy} interface="popover" onIonChange={bySelectionChanged}>
+                  <IonSelect value={displayBy} interface="popover" onIonChange={bySelectionChanged}>
                     {by.map((value, index) => {
-                      let selected = value === displayBy ? true : false;
-                      return <IonSelectOption selected={selected} key={index} value={value}>{value}</IonSelectOption>;
+                      return <IonSelectOption key={index} value={value}>{value}</IonSelectOption>;
                     })}
                   </IonSelect>
                 </IonCol>

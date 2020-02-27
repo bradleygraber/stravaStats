@@ -128,8 +128,7 @@ export default class StravaStats {
     console.log("refreshAccessToken")
     let accessInfoObj = this.loginData;
 
-    let expireDate = accessInfoObj ? new Date(accessInfoObj.expires_at*1000) : new Date("1/1/2000");
-    if (expireDate>new Date())
+    if (new Date(accessInfoObj.expires_at*1000)>new Date())
       return;
 
     var url = "https://www.strava.com/oauth/token";
