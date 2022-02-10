@@ -22,7 +22,7 @@
     "cordova-plugin-ionic": "5.4.6",
     "ionicons": "^5.0.0",
     "is-online": "^8.2.1",
-    "node-sass": "^4.13.1",
+    "node-sass": "^7.0.0",
     "react": "^16.12.0",
     "react-data-table-component": "^6.2.3",
     "react-dom": "^16.12.0",
