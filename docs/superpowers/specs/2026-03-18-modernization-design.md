@@ -22,7 +22,7 @@ Create React App is deprecated. Migrate to Vite for fast HMR and modern build pi
 |---|---|---|
 | React | 16 | 18 |
 | Ionic React | 5 | 8 |
-| react-router-dom | 5 | 6 |
+| react-router-dom | 5 | 5 (pinned by @ionic/react-router) |
 | TypeScript | 3.7 | 5.x |
 | node-sass | 4 (deprecated) | sass (dart-sass) |
 | react-data-table-component | 6 | 7 |
@@ -35,6 +35,11 @@ Create React App is deprecated. Migrate to Vite for fast HMR and modern build pi
 - `combineReducers.ts` — unused
 - `@turf/turf` — only `@turf/boolean-point-in-polygon` is used; the full bundle (~500KB) is unnecessary
 - `loading.tsx` — unused (not referenced in routing), its functionality is handled by `IonLoading`
+
+### New requirements for Ionic 6+
+
+- Add `setupIonicReact()` call in `App.tsx` (or `main.tsx`) — required initialization for Ionic 6+
+- Add `vite-env.d.ts` in `src/` for TypeScript IntelliSense on `import.meta.env` vars
 
 ### Keep
 
@@ -121,11 +126,13 @@ Stat tracking config stays the same:
 
 ## 5. UI Components & Routing
 
-### react-router v6 migration
+### Routing stays on react-router v5
 
-- `<Route path="/" render={props => ...}/>` becomes `<Route path="/" element={...}/>`
-- `<Redirect>` becomes `<Navigate>`
-- `match.path` pattern matching uses `useParams()` instead
+`@ionic/react-router` wraps react-router v5 — Ionic's `IonReactRouter`, `IonRouterOutlet`, and `IonTabs` depend on it. The existing routing patterns (`<Route render={...}>`, `<Redirect>`, `match.path`) stay the same. Only update to the latest v5 patch release.
+
+Minor improvements within v5:
+- Use `useParams()` hook where possible instead of `match.params` from props
+- Clean up `RouteComponentProps` usage
 
 ### Components (same structure)
 
