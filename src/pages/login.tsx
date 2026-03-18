@@ -1,19 +1,16 @@
-import { IonPage, IonImg, IonButton } from '@ionic/react';
 import React from 'react';
-import { StateProps } from '../data/state'
+import { IonPage, IonImg, IonButton } from '@ionic/react';
+import { getOAuthUrl } from '../data/stravaAuth';
 
-const Login: React.FC<StateProps> = () => {
-  console.log("entering login");
-
-  let arr = window.location.href.split("/");
-  let redirect_uri = arr[0] + "//" + arr[2] + "/auth";
-
-  let loginLink = "https://www.strava.com/oauth/authorize?client_id=41457&redirect_uri=" + redirect_uri + "&response_type=code&approval_prompt=auto&scope=activity:read_all";
-  let imgSrc = "/assets/strava_transparent_button.png"
+const Login: React.FC = () => {
+  const loginLink = getOAuthUrl();
+  const imgSrc = '/assets/strava_transparent_button.png';
 
   return (
     <IonPage id="login">
-      <IonButton color="stravaorange" size="large" href={loginLink}><IonImg src={imgSrc} alt="Strava Login Button"/></IonButton>
+      <IonButton color="stravaorange" size="large" href={loginLink}>
+        <IonImg src={imgSrc} alt="Strava Login Button" />
+      </IonButton>
     </IonPage>
   );
 };
