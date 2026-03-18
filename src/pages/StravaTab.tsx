@@ -43,10 +43,16 @@ const StravaTab: React.FC<StravaTabProps> = ({ tab, totals, finalTotals }) => {
   const statBy = displayStat.toLowerCase() + displayBy.replace(/\s/g, '');
   const displayList = totals[tab][statBy].map((row: any) => ({
     ...row,
-    star: row.record ? <IonIcon icon={star} /> : undefined,
+    star: row.record ? <IonIcon icon={star} className="record-star" /> : undefined,
   }));
 
   const total = finalTotals[tab][statBy];
+
+  // Split total into value and unit for display (e.g., "1,234 mi" → "1,234" + "mi")
+  const totalStr = String(total);
+  const totalParts = totalStr.match(/^(.+?)\s+(\S+)$/);
+  const totalValue = totalParts ? totalParts[1] : totalStr;
+  const totalUnit = totalParts ? totalParts[2] : '';
 
   createTheme('transparent', {
     text: {
@@ -57,30 +63,29 @@ const StravaTab: React.FC<StravaTabProps> = ({ tab, totals, finalTotals }) => {
       default: 'transparent',
     },
     divider: {
-      default: colors['--ion-text-color'],
+      default: colors['--ion-color-step-200'] || 'rgba(255,255,255,0.08)',
     },
     highlightOnHover: {
-      default: '#efefef',
-      text: '#232323',
+      default: colors['--ion-color-step-150'] || 'rgba(255,255,255,0.04)',
+      text: colors['--ion-text-color'],
     },
   });
 
   const customStyles = {
     subHeader: {
       style: {
-        minHeight: '1px',
-        color: colors['--ion-text-color'],
+        display: 'none' as const,
       },
     },
   };
 
   const columns: any[] = [
-    { name: 'Star', cell: (row: any) => row.star, width: '20px', compact: true },
-    { name: 'Year', selector: (row: any) => row.name, width: 'auto', compact: true },
-    { name: 'Data', selector: (row: any) => row.value, width: 'auto' },
+    { name: 'Star', cell: (row: any) => row.star, width: '28px', compact: true },
+    { name: 'Name', selector: (row: any) => row.name, grow: 2, compact: true },
+    { name: 'Data', selector: (row: any) => row.value, grow: 1, right: true },
   ];
   if (displayStat !== 'Speed') {
-    columns.push({ name: 'Percent', selector: (row: any) => row.percent, width: 'auto' });
+    columns.push({ name: 'Percent', selector: (row: any) => row.percent, width: '60px', right: true, compact: true });
   }
 
   return (
@@ -98,8 +103,12 @@ const StravaTab: React.FC<StravaTabProps> = ({ tab, totals, finalTotals }) => {
           <IonRow>
             <IonCol className="listContainer">
               <IonCard className="list">
+                <div className="stat-total">
+                  <div className="stat-total-value">{totalValue}</div>
+                  {totalUnit && <div className="stat-total-label">{totalUnit}</div>}
+                </div>
                 <IonGrid>
-                  <IonRow>
+                  <IonRow className="selector-row">
                     <IonCol>
                       <IonSelect value={displayStat} interface="popover" onIonChange={(e: any) => setDisplayStat(e.detail.value)}>
                         {stats.map((value, index) => (
@@ -119,9 +128,6 @@ const StravaTab: React.FC<StravaTabProps> = ({ tab, totals, finalTotals }) => {
                     <IonCol>
                       <DataTable
                         theme="transparent"
-                        title={`Total: ${total}`}
-                        subHeader={displayStat !== 'Speed'}
-                        subHeaderComponent={`Total: ${total}`}
                         columns={columns}
                         data={displayList}
                         noTableHead={true}

@@ -1,9 +1,103 @@
-.list {
-  background: linear-gradient(to bottom right, var(--ion-color-step-150) 0%, var(--ion-color-step-350) 100%);
-  color: var(--ion-color-step-950);
-}
+/* ── Stat Card ─────────────────────────────────── */
 
 .listContainer {
-  max-width: 400px;
+  max-width: 480px;
   margin: 0 auto;
+  padding: 8px 4px;
+}
+
+.list {
+  background: linear-gradient(
+    165deg,
+    var(--ion-color-step-100) 0%,
+    var(--ion-color-step-200) 100%
+  );
+  border-radius: var(--card-radius, 16px);
+  border: 1px solid var(--ion-color-step-200);
+  border-top: 2px solid var(--strava-orange, #fc4c02);
+  overflow: hidden;
+  box-shadow:
+    0 2px 8px rgba(0, 0, 0, 0.12),
+    0 0 0 1px rgba(255, 255, 255, 0.03) inset;
+}
+
+/* ── Stat Total (hero number) ──────────────────── */
+
+.stat-total {
+  padding: 20px 20px 4px;
+  text-align: center;
+  animation: fadeIn 0.3s ease-out;
+
+  .stat-total-value {
+    font-family: var(--font-display);
+    font-size: 52px;
+    font-weight: 400;
+    line-height: 1;
+    letter-spacing: -0.03em;
+    color: var(--ion-text-color);
+  }
+
+  .stat-total-label {
+    font-family: var(--font-body);
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    opacity: 0.4;
+    margin-top: 6px;
+  }
+}
+
+/* ── Dropdowns ─────────────────────────────────── */
+
+.selector-row {
+  padding: 0 8px;
+
+  ion-select {
+    font-family: var(--font-body);
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 0.02em;
+    --padding-start: 12px;
+    --padding-end: 8px;
+    --placeholder-opacity: 0.5;
+  }
+}
+
+/* ── Data Table Overrides ──────────────────────── */
+
+.rdt_TableRow {
+  font-family: var(--font-mono) !important;
+  font-size: 13px !important;
+  min-height: 36px !important;
+  border-bottom-color: var(--ion-color-step-150) !important;
+  transition: background-color 0.15s ease;
+}
+
+.rdt_TableCell {
+  font-family: var(--font-mono) !important;
+  font-size: 13px !important;
+  padding: 0 8px !important;
+
+  &:first-child {
+    padding-left: 12px !important;
+  }
+}
+
+.rdt_TableRow:hover {
+  background-color: var(--ion-color-step-150) !important;
+}
+
+/* ── Star Icon ─────────────────────────────────── */
+
+.record-star {
+  color: var(--strava-orange, #fc4c02);
+  font-size: 14px;
+}
+
+/* ── Animations ────────────────────────────────── */
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
