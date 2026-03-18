@@ -42,7 +42,7 @@ import './theme/variables.css';
 setupIonicReact();
 
 const AppContent: React.FC = () => {
-  const { totals, finalTotals, types, status, loadingMessage, error, logout } = useStravaData();
+  const { totals, finalTotals, status, loadingMessage, error, logout } = useStravaData();
 
   const isLoading = status === 'downloading' || status === 'processing' || status === 'authenticating';
 
@@ -74,7 +74,7 @@ const AppContent: React.FC = () => {
             return <Login />;
           }
           if (status === 'ready') {
-            return <MainTabs totals={totals} finalTotals={finalTotals} types={types} />;
+            return <MainTabs totals={totals} finalTotals={finalTotals} />;
           }
           return <IonPage></IonPage>;
         }} />

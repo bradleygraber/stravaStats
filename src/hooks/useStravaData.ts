@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import {
   LoginData,
   getSavedState,
@@ -8,6 +8,7 @@ import {
   refreshAccessToken,
 } from '../data/stravaAuth';
 import { processActivities } from '../data/stravaProcessing';
+import { storage } from '../data/storage';
 
 type Status = 'idle' | 'authenticating' | 'downloading' | 'processing' | 'ready' | 'error' | 'offline';
 
@@ -36,10 +37,10 @@ export function useStravaData(): StravaData {
     // Clear per-tab display settings
     if (totals) {
       for (const tab in totals) {
-        localStorage.removeItem('stravaTabSaveDisplay' + tab);
+        storage.remove('stravaTabSaveDisplay' + tab);
       }
     }
-    localStorage.removeItem('stravaAppUserPrefs');
+    storage.remove('stravaAppUserPrefs');
     window.location.reload();
   }, [totals]);
 
@@ -81,17 +82,21 @@ export function useStravaData(): StravaData {
     // Use a local variable to track accumulated activities across paginated fetches.
     // React state (setActivities) is async and would create stale closures in recursive calls.
     let localActivities = activities ? [...activities] : [];
+    // Track the current token locally to avoid re-triggering this effect on refresh
+    let currentLoginData = loginData;
 
     const fetchActivities = async (attempt: number = 0) => {
       setStatus('downloading');
 
-      const refreshed = await refreshAccessToken(loginData);
+      const refreshed = await refreshAccessToken(currentLoginData);
       if (!refreshed) {
         setStatus('idle');
         return;
       }
+      // Update local ref and persist without triggering a re-render
+      currentLoginData = refreshed;
       if (refreshed !== loginData) {
-        setLoginData(refreshed);
+        saveState(refreshed, localActivities);
       }
 
       const after = localActivities.length > 1
@@ -131,7 +136,7 @@ export function useStravaData(): StravaData {
           localActivities.sort((b: any, a: any) => new Date(a.start_date).getTime() - new Date(b.start_date).getTime());
           setActivities([...localActivities]);
           setLoadingMessage(`Loading Activities: ${localActivities.length} loaded`);
-          saveState(refreshed, localActivities);
+          saveState(currentLoginData, localActivities);
           // Continue paginating — recursive call uses localActivities (not React state)
           await fetchActivities(0);
         } else if (res.status === 401) {

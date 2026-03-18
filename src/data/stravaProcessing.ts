@@ -23,7 +23,8 @@ const STATS_TO_TRACK: Record<string, string> = {
   speed: 'average_speed',
 };
 
-const THINGS_TO_TRACK_BY = ['ByState', 'ByYear'];
+export const STAT_NAMES = Object.keys(STATS_TO_TRACK);
+export const THINGS_TO_TRACK_BY = ['ByState', 'ByYear'];
 
 export async function processActivities(
   activities: any[],
@@ -44,6 +45,7 @@ export async function processActivities(
     }
   }
 
+  onProgress(100);
   calcAverages(totals);
   sort(totals);
   const finalTotals = convertToDisplayValues(totals);

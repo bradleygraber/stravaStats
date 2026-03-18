@@ -7,7 +7,7 @@ import { star } from 'ionicons/icons';
 import './StravaTab.scss';
 import DataTable, { createTheme } from 'react-data-table-component';
 import { useTheme } from '../hooks/useTheme';
-import { capitalize } from '../data/stravaProcessing';
+import { capitalize, STAT_NAMES, THINGS_TO_TRACK_BY } from '../data/stravaProcessing';
 import { storage } from '../data/storage';
 
 interface StravaTabProps {
@@ -16,12 +16,9 @@ interface StravaTabProps {
   finalTotals: any;
 }
 
-const STATS_TO_TRACK = ['distance', 'time', 'elevation', 'speed'];
-const THINGS_TO_TRACK_BY = ['ByState', 'ByYear'];
-
 const StravaTab: React.FC<StravaTabProps> = ({ tab, totals, finalTotals }) => {
   const { colors } = useTheme();
-  const stats = STATS_TO_TRACK.map(s => capitalize(s));
+  const stats = STAT_NAMES.map(s => capitalize(s));
   const by = THINGS_TO_TRACK_BY.map(b => capitalize(b));
 
   const [displayStat, setDisplayStat] = useState(stats[0]);

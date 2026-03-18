@@ -13,17 +13,21 @@ interface Boundary {
 
 let boundaries: Boundary[] = [];
 let countryBoundaries: Boundary[] = [];
-let loaded = false;
+let loadingPromise: Promise<void> | null = null;
 const previousHits: number[] = [];
 const previousCountries: number[] = [];
 
 async function ensureLoaded(): Promise<void> {
-  if (loaded) return;
-  const { US_STATES } = await import('./usStates');
-  const { COUNTRIES } = await import('./worldSmall');
-  boundaries = US_STATES.map((f: any) => ({ name: f.name, geometry: f.geometry }));
-  countryBoundaries = COUNTRIES.map((f: any) => ({ name: f.name, geometry: f.geometry }));
-  loaded = true;
+  if (boundaries.length > 0) return;
+  if (!loadingPromise) {
+    loadingPromise = (async () => {
+      const { US_STATES } = await import('./usStates');
+      const { COUNTRIES } = await import('./worldSmall');
+      boundaries = US_STATES.map((f: any) => ({ name: f.name, geometry: f.geometry }));
+      countryBoundaries = COUNTRIES.map((f: any) => ({ name: f.name, geometry: f.geometry }));
+    })();
+  }
+  return loadingPromise;
 }
 
 export async function whichState(point: Point): Promise<string> {

@@ -8,7 +8,6 @@ import StravaTab from './StravaTab';
 interface MainTabsProps {
   totals: any;
   finalTotals: any;
-  types: string[];
 }
 
 const ICONS: Record<string, string> = {
@@ -17,7 +16,7 @@ const ICONS: Record<string, string> = {
   Run: walk,
 };
 
-const MainTabs: React.FC<MainTabsProps> = ({ totals, finalTotals, types }) => {
+const MainTabs: React.FC<MainTabsProps> = ({ totals, finalTotals }) => {
   return (
     <IonReactRouter>
       <IonTabs>
