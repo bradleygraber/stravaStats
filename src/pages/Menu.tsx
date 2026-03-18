@@ -25,7 +25,7 @@ const Menu: React.FC<MenuProps> = ({ logout }) => {
           <IonTitle>Menu</IonTitle>
         </IonToolbar>
       </IonHeader>
-      <IonContent class="outer-content">
+      <IonContent className="outer-content">
         <IonList>
           <IonItem button onClick={logout}>
             <IonIcon slot="start" icon={alert} />

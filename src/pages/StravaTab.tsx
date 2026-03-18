@@ -99,8 +99,8 @@ const StravaTab: React.FC<StravaTabProps> = ({ tab, totals, finalTotals }) => {
       <IonContent>
         <IonGrid>
           <IonRow>
-            <IonCol class="listContainer">
-              <IonCard class="list">
+            <IonCol className="listContainer">
+              <IonCard className="list">
                 <IonGrid>
                   <IonRow>
                     <IonCol>

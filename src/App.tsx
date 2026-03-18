@@ -84,7 +84,7 @@ const AppContent: React.FC = () => {
 };
 
 const App: React.FC = () => (
-  <IonApp id="stravaStatsApp">
+  <IonApp>
     <ThemeProvider>
       <IonReactRouter>
         <AppContent />

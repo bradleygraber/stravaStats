@@ -1,3 +1,4 @@
+// @ts-ignore — turf's package.json exports don't resolve types with bundler moduleResolution
 import booleanPointInPolygon from '@turf/boolean-point-in-polygon';
 
 interface Point {
@@ -7,7 +8,7 @@ interface Point {
 
 interface Boundary {
   name: string;
-  geometry: GeoJSON.Polygon | GeoJSON.MultiPolygon;
+  geometry: any;
 }
 
 let boundaries: Boundary[] = [];
