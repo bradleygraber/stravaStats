@@ -19,16 +19,6 @@
   box-shadow:
     0 2px 8px rgba(0, 0, 0, 0.12),
     0 0 0 1px rgba(255, 255, 255, 0.03) inset;
-
-  // Frosted glass effect on lighter themes
-  @supports (backdrop-filter: blur(1px)) {
-    backdrop-filter: blur(20px) saturate(1.2);
-    background: linear-gradient(
-      165deg,
-      rgba(var(--ion-background-color-rgb), 0.6) 0%,
-      rgba(var(--ion-background-color-rgb), 0.8) 100%
-    );
-  }
 }
 
 /* ── Stat Total (hero number) ──────────────────── */
@@ -39,7 +29,7 @@
   animation: fadeIn 0.3s ease-out;
 
   .stat-total-value {
-    font-family: 'Instrument Serif', Georgia, serif;
+    font-family: var(--font-display);
     font-size: 52px;
     font-weight: 400;
     line-height: 1;
@@ -48,7 +38,7 @@
   }
 
   .stat-total-label {
-    font-family: 'DM Sans', sans-serif;
+    font-family: var(--font-body);
     font-size: 11px;
     font-weight: 500;
     letter-spacing: 0.1em;
@@ -64,7 +54,7 @@
   padding: 0 8px;
 
   ion-select {
-    font-family: 'DM Sans', sans-serif;
+    font-family: var(--font-body);
     font-size: 13px;
     font-weight: 500;
     letter-spacing: 0.02em;
@@ -76,52 +66,16 @@
 
 /* ── Data Table Overrides ──────────────────────── */
 
-// Row styling
 .rdt_TableRow {
-  font-family: 'DM Mono', 'SF Mono', monospace !important;
+  font-family: var(--font-mono) !important;
   font-size: 13px !important;
   min-height: 36px !important;
   border-bottom-color: var(--ion-color-step-150) !important;
   transition: background-color 0.15s ease;
 }
 
-// Record row highlight — orange left accent
-.rdt_TableRow:has([data-tag="record"]),
-.record-row {
-  position: relative;
-
-  &::before {
-    content: '';
-    position: absolute;
-    left: 0;
-    top: 4px;
-    bottom: 4px;
-    width: 3px;
-    background: var(--strava-orange, #fc4c02);
-    border-radius: 2px;
-  }
-}
-
-// Title (total)
-.rdt_TableHeader {
-  display: none !important; // we use our own stat-total instead
-}
-
-// Sub-header total
-.rdt_TableSubHeader {
-  font-family: 'DM Sans', sans-serif !important;
-  font-size: 12px !important;
-  font-weight: 500 !important;
-  letter-spacing: 0.06em !important;
-  text-transform: uppercase !important;
-  opacity: 0.5;
-  min-height: 28px !important;
-  padding: 0 16px !important;
-}
-
-// Cell text
 .rdt_TableCell {
-  font-family: 'DM Mono', 'SF Mono', monospace !important;
+  font-family: var(--font-mono) !important;
   font-size: 13px !important;
   padding: 0 8px !important;
 
@@ -130,7 +84,6 @@
   }
 }
 
-// Hover state
 .rdt_TableRow:hover {
   background-color: var(--ion-color-step-150) !important;
 }
