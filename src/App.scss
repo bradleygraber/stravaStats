@@ -97,32 +97,36 @@ ion-menu {
 /* ── Login Page ────────────────────────────────── */
 
 #login {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  position: relative;
-  overflow: hidden;
+  ion-content {
+    --background: var(--ion-background-color);
 
-  &::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    opacity: 0.04;
-    background-image:
-      repeating-radial-gradient(
-        ellipse at 30% 50%,
-        transparent 0,
-        transparent 40px,
-        var(--ion-text-color) 40px,
-        var(--ion-text-color) 41px
-      ),
-      repeating-radial-gradient(
-        ellipse at 70% 40%,
-        transparent 0,
-        transparent 60px,
-        var(--ion-text-color) 60px,
-        var(--ion-text-color) 61px
-      );
+    &::part(scroll) {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100%;
+      position: relative;
+    }
+
+    // Topographic contour background
+    &::part(background) {
+      background-image:
+        repeating-radial-gradient(
+          ellipse at 30% 50%,
+          transparent 0,
+          transparent 40px,
+          var(--ion-text-color) 40px,
+          var(--ion-text-color) 41px
+        ),
+        repeating-radial-gradient(
+          ellipse at 70% 40%,
+          transparent 0,
+          transparent 60px,
+          var(--ion-text-color) 60px,
+          var(--ion-text-color) 61px
+        );
+      opacity: 0.04;
+    }
   }
 
   .login-content {

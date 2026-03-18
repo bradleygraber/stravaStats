@@ -1,5 +1,5 @@
 import React from 'react';
-import { IonPage, IonImg, IonButton } from '@ionic/react';
+import { IonPage, IonContent, IonImg, IonButton } from '@ionic/react';
 import { getOAuthUrl } from '../data/stravaAuth';
 
 const Login: React.FC = () => {
@@ -8,15 +8,17 @@ const Login: React.FC = () => {
 
   return (
     <IonPage id="login">
-      <div className="login-content">
-        <div className="login-brand">
-          <h1>Strava Stats</h1>
-          <p>Your miles, mapped</p>
+      <IonContent>
+        <div className="login-content">
+          <div className="login-brand">
+            <h1>Strava Stats</h1>
+            <p>Your miles, mapped</p>
+          </div>
+          <IonButton color="stravaorange" size="large" href={loginLink}>
+            <IonImg src={imgSrc} alt="Connect with Strava" />
+          </IonButton>
         </div>
-        <IonButton color="stravaorange" size="large" href={loginLink}>
-          <IonImg src={imgSrc} alt="Connect with Strava" />
-        </IonButton>
-      </div>
+      </IonContent>
     </IonPage>
   );
 };
