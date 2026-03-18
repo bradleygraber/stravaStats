@@ -1,78 +1,56 @@
 import booleanPointInPolygon from '@turf/boolean-point-in-polygon';
 
-export default class WhichState {
-  previousHits: any;
-  previousCountries: any;
-  boundries: any;
-  countryBoundries: any;
-  loaded: boolean;
+interface Point {
+  lat: number;
+  lng: number;
+}
 
-  constructor() {
-    this.previousHits = [];
-    this.previousCountries = [];
-    this.boundries = [];
-    this.countryBoundries = [];
-    this.loaded = false;
-    this.init();
-  }
-  async init() {
-    let { US_STATES } = await import('./usStates');
-    let { COUNTRIES } = await import('./worldSmall');
-    for (let i in US_STATES) {
-      let feature = US_STATES[i];
-      this.boundries.push({name: feature.name, geometry: feature.geometry});
-    }
-    for (let i in COUNTRIES) {
-      let feature = COUNTRIES[i];
-      this.countryBoundries.push({name: feature.name, geometry: feature.geometry})
-    }
-    this.loaded = true;
-  }
+interface Boundary {
+  name: string;
+  geometry: GeoJSON.Polygon | GeoJSON.MultiPolygon;
+}
 
-  async is (point: any) {
-    if (!this.loaded) {
-      console.log("not loaded, waiting 200ms");
-      return new Promise(resolve => {
-        setTimeout(() => {
-          resolve(this.is(point));
-        }, 200);
-      });
-    }
-    if (!booleanPointInPolygon)
-      throw new Error("BooleanPointInPolygon is Required, please install it first.");
-    if (!point || !point.lat || !point.lng)
-      throw new Error("Malformed, or missing point. Expected format {lat:<lat>, lng:<lng>}");
+let boundaries: Boundary[] = [];
+let countryBoundaries: Boundary[] = [];
+let loaded = false;
+const previousHits: number[] = [];
+const previousCountries: number[] = [];
 
-    point = [point.lng, point.lat];
-    for (let i = 0; i < this.previousHits.length; i++) {
-      let s = this.previousHits[i];
-      let state = this.boundries[s];
-      if (booleanPointInPolygon(point, state.geometry)) {
-        return new Promise(resolve => { resolve(state.name); });
-      }
+async function ensureLoaded(): Promise<void> {
+  if (loaded) return;
+  const { US_STATES } = await import('./usStates');
+  const { COUNTRIES } = await import('./worldSmall');
+  boundaries = US_STATES.map((f: any) => ({ name: f.name, geometry: f.geometry }));
+  countryBoundaries = COUNTRIES.map((f: any) => ({ name: f.name, geometry: f.geometry }));
+  loaded = true;
+}
+
+export async function whichState(point: Point): Promise<string> {
+  await ensureLoaded();
+
+  const coords: [number, number] = [point.lng, point.lat];
+
+  for (const idx of previousHits) {
+    if (booleanPointInPolygon(coords, boundaries[idx].geometry)) {
+      return boundaries[idx].name;
     }
-    for (let s in this.boundries) {
-      let state = this.boundries[s];
-      if (booleanPointInPolygon(point, state.geometry)) {
-        this.previousHits.push(s);
-        return new Promise(resolve => { resolve(state.name); });
-      }
-    }
-    for (let i = 0; i < this.previousCountries.length; i++) {
-      let s = this.previousCountries[i];
-      let state = this.countryBoundries[s];
-      if (booleanPointInPolygon(point, state.geometry)) {
-        return new Promise(resolve => { resolve(state.name); });
-      }
-    }
-    for (let s in this.countryBoundries) {
-      let state = this.countryBoundries[s];
-      if (state.name !==   "United States" && booleanPointInPolygon(point, state.geometry)) {
-        this.previousCountries.push(s);
-        return new Promise(resolve => { resolve(state.name); });
-      }
-    }
-    //    return "Unknown " + point[1] + "," + point[0];
-    return new Promise(resolve => { resolve("Unknown"); });
   }
+  for (let i = 0; i < boundaries.length; i++) {
+    if (booleanPointInPolygon(coords, boundaries[i].geometry)) {
+      previousHits.push(i);
+      return boundaries[i].name;
+    }
+  }
+  for (const idx of previousCountries) {
+    if (booleanPointInPolygon(coords, countryBoundaries[idx].geometry)) {
+      return countryBoundaries[idx].name;
+    }
+  }
+  for (let i = 0; i < countryBoundaries.length; i++) {
+    if (countryBoundaries[i].name !== 'United States' && booleanPointInPolygon(coords, countryBoundaries[i].geometry)) {
+      previousCountries.push(i);
+      return countryBoundaries[i].name;
+    }
+  }
+  return 'Unknown';
 }
