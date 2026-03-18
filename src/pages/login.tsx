@@ -8,9 +8,15 @@ const Login: React.FC = () => {
 
   return (
     <IonPage id="login">
-      <IonButton color="stravaorange" size="large" href={loginLink}>
-        <IonImg src={imgSrc} alt="Strava Login Button" />
-      </IonButton>
+      <div className="login-content">
+        <div className="login-brand">
+          <h1>Strava Stats</h1>
+          <p>Your miles, mapped</p>
+        </div>
+        <IonButton color="stravaorange" size="large" href={loginLink}>
+          <IonImg src={imgSrc} alt="Connect with Strava" />
+        </IonButton>
+      </div>
     </IonPage>
   );
 };

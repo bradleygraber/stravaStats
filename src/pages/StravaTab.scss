@@ -1,9 +1,150 @@
-.list {
-  background: linear-gradient(to bottom right, var(--ion-color-step-150) 0%, var(--ion-color-step-350) 100%);
-  color: var(--ion-color-step-950);
-}
+/* ── Stat Card ─────────────────────────────────── */
 
 .listContainer {
-  max-width: 400px;
+  max-width: 480px;
   margin: 0 auto;
+  padding: 8px 4px;
+}
+
+.list {
+  background: linear-gradient(
+    165deg,
+    var(--ion-color-step-100) 0%,
+    var(--ion-color-step-200) 100%
+  );
+  border-radius: var(--card-radius, 16px);
+  border: 1px solid var(--ion-color-step-200);
+  border-top: 2px solid var(--strava-orange, #fc4c02);
+  overflow: hidden;
+  box-shadow:
+    0 2px 8px rgba(0, 0, 0, 0.12),
+    0 0 0 1px rgba(255, 255, 255, 0.03) inset;
+
+  // Frosted glass effect on lighter themes
+  @supports (backdrop-filter: blur(1px)) {
+    backdrop-filter: blur(20px) saturate(1.2);
+    background: linear-gradient(
+      165deg,
+      rgba(var(--ion-background-color-rgb), 0.6) 0%,
+      rgba(var(--ion-background-color-rgb), 0.8) 100%
+    );
+  }
+}
+
+/* ── Stat Total (hero number) ──────────────────── */
+
+.stat-total {
+  padding: 20px 20px 4px;
+  text-align: center;
+  animation: fadeIn 0.3s ease-out;
+
+  .stat-total-value {
+    font-family: 'Instrument Serif', Georgia, serif;
+    font-size: 52px;
+    font-weight: 400;
+    line-height: 1;
+    letter-spacing: -0.03em;
+    color: var(--ion-text-color);
+  }
+
+  .stat-total-label {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    opacity: 0.4;
+    margin-top: 6px;
+  }
+}
+
+/* ── Dropdowns ─────────────────────────────────── */
+
+.selector-row {
+  padding: 0 8px;
+
+  ion-select {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 0.02em;
+    --padding-start: 12px;
+    --padding-end: 8px;
+    --placeholder-opacity: 0.5;
+  }
+}
+
+/* ── Data Table Overrides ──────────────────────── */
+
+// Row styling
+.rdt_TableRow {
+  font-family: 'DM Mono', 'SF Mono', monospace !important;
+  font-size: 13px !important;
+  min-height: 36px !important;
+  border-bottom-color: var(--ion-color-step-150) !important;
+  transition: background-color 0.15s ease;
+}
+
+// Record row highlight — orange left accent
+.rdt_TableRow:has([data-tag="record"]),
+.record-row {
+  position: relative;
+
+  &::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 4px;
+    bottom: 4px;
+    width: 3px;
+    background: var(--strava-orange, #fc4c02);
+    border-radius: 2px;
+  }
+}
+
+// Title (total)
+.rdt_TableHeader {
+  display: none !important; // we use our own stat-total instead
+}
+
+// Sub-header total
+.rdt_TableSubHeader {
+  font-family: 'DM Sans', sans-serif !important;
+  font-size: 12px !important;
+  font-weight: 500 !important;
+  letter-spacing: 0.06em !important;
+  text-transform: uppercase !important;
+  opacity: 0.5;
+  min-height: 28px !important;
+  padding: 0 16px !important;
+}
+
+// Cell text
+.rdt_TableCell {
+  font-family: 'DM Mono', 'SF Mono', monospace !important;
+  font-size: 13px !important;
+  padding: 0 8px !important;
+
+  &:first-child {
+    padding-left: 12px !important;
+  }
+}
+
+// Hover state
+.rdt_TableRow:hover {
+  background-color: var(--ion-color-step-150) !important;
+}
+
+/* ── Star Icon ─────────────────────────────────── */
+
+.record-star {
+  color: var(--strava-orange, #fc4c02);
+  font-size: 14px;
+}
+
+/* ── Animations ────────────────────────────────── */
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
 }

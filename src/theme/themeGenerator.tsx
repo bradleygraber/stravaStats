@@ -8,6 +8,9 @@ interface StringIter {
 
 export const defaultTheme = {
   "name": "Default",
+  "text": "#f0ece4",
+  "background": "#0a0a0f",
+  "primary": "#fc4c02"
 }
 export const darkTheme = {
   "name": "Dark",
@@ -75,8 +78,15 @@ export const banana = {
   "primary": "#E7E9BB"
 }
 
+export const lightTheme = {
+  "name": "Light",
+  "text": "#1a1a1a",
+  "background": "#ffffff",
+  "primary": "#fc4c02"
+}
+
 export const themePack = [
-  defaultTheme, darkTheme, pinkTheme, blueTheme, darkBlueTheme, darkPinkTheme, steelGrey, juicyOrange, mojito, royal, banana
+  defaultTheme, lightTheme, darkTheme, steelGrey, royal, mojito, juicyOrange, blueTheme, darkBlueTheme, pinkTheme, darkPinkTheme, banana
 ]
 
 function mix(c1:string, c2:string, ratio:number) {
