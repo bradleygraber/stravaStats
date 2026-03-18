@@ -13,11 +13,17 @@ export const storage = {
     if (raw === null) return fallback;
     try {
       return JSON.parse(raw) as T;
-    } catch {
+    } catch (e) {
+      console.error(`Failed to parse stored JSON for key "${key}":`, e);
+      localStorage.removeItem(key);
       return fallback;
     }
   },
   setJSON(key: string, value: unknown): void {
-    localStorage.setItem(key, JSON.stringify(value));
+    try {
+      localStorage.setItem(key, JSON.stringify(value));
+    } catch (e) {
+      console.error(`Failed to save to localStorage for key "${key}":`, e);
+    }
   },
 };

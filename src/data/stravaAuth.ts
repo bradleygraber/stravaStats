@@ -4,6 +4,12 @@ const STORAGE_KEY = 'stravaStatsState';
 const CLIENT_ID = import.meta.env.VITE_STRAVA_CLIENT_ID;
 const CLIENT_SECRET = import.meta.env.VITE_STRAVA_CLIENT_SECRET;
 
+if (!CLIENT_ID || !CLIENT_SECRET) {
+  throw new Error(
+    'Missing Strava API credentials. Set VITE_STRAVA_CLIENT_ID and VITE_STRAVA_CLIENT_SECRET in your .env file.'
+  );
+}
+
 export interface LoginData {
   access_token: string;
   refresh_token: string;
@@ -30,19 +36,27 @@ export function clearStoredData(): void {
 }
 
 export async function exchangeAuthCode(code: string): Promise<LoginData | null> {
-  const res = await fetch('https://www.strava.com/oauth/token', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json; charset=UTF-8' },
-    body: JSON.stringify({
-      client_id: CLIENT_ID,
-      client_secret: CLIENT_SECRET,
-      code,
-      grant_type: 'authorization_code',
-    }),
-  });
+  try {
+    const res = await fetch('https://www.strava.com/oauth/token', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json; charset=UTF-8' },
+      body: JSON.stringify({
+        client_id: CLIENT_ID,
+        client_secret: CLIENT_SECRET,
+        code,
+        grant_type: 'authorization_code',
+      }),
+    });
 
-  if (res.status !== 200) return null;
-  return res.json();
+    if (res.status !== 200) {
+      console.error(`OAuth token exchange failed: HTTP ${res.status}`);
+      return null;
+    }
+    return res.json();
+  } catch (e) {
+    console.error('OAuth token exchange network error:', e);
+    return null;
+  }
 }
 
 export async function refreshAccessToken(loginData: LoginData): Promise<LoginData | null> {
@@ -50,23 +64,29 @@ export async function refreshAccessToken(loginData: LoginData): Promise<LoginDat
     return loginData; // not expired
   }
 
-  const res = await fetch('https://www.strava.com/oauth/token', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json; charset=UTF-8' },
-    body: JSON.stringify({
-      client_id: CLIENT_ID,
-      client_secret: CLIENT_SECRET,
-      refresh_token: loginData.refresh_token,
-      grant_type: 'refresh_token',
-    }),
-  });
+  try {
+    const res = await fetch('https://www.strava.com/oauth/token', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json; charset=UTF-8' },
+      body: JSON.stringify({
+        client_id: CLIENT_ID,
+        client_secret: CLIENT_SECRET,
+        refresh_token: loginData.refresh_token,
+        grant_type: 'refresh_token',
+      }),
+    });
 
-  if (res.status === 200) return res.json();
-  if (res.status === 401) {
-    clearStoredData();
+    if (res.status === 200) return res.json();
+    if (res.status === 401) {
+      clearStoredData();
+      return null;
+    }
+    console.error(`Token refresh failed: HTTP ${res.status}`);
+    return null;
+  } catch (e) {
+    console.error('Token refresh network error:', e);
     return null;
   }
-  return null;
 }
 
 export function getOAuthUrl(): string {

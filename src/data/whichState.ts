@@ -21,10 +21,16 @@ async function ensureLoaded(): Promise<void> {
   if (boundaries.length > 0) return;
   if (!loadingPromise) {
     loadingPromise = (async () => {
-      const { US_STATES } = await import('./usStates');
-      const { COUNTRIES } = await import('./worldSmall');
-      boundaries = US_STATES.map((f: any) => ({ name: f.name, geometry: f.geometry }));
-      countryBoundaries = COUNTRIES.map((f: any) => ({ name: f.name, geometry: f.geometry }));
+      try {
+        const { US_STATES } = await import('./usStates');
+        const { COUNTRIES } = await import('./worldSmall');
+        boundaries = US_STATES.map((f: any) => ({ name: f.name, geometry: f.geometry }));
+        countryBoundaries = COUNTRIES.map((f: any) => ({ name: f.name, geometry: f.geometry }));
+      } catch (e) {
+        loadingPromise = null; // allow retry on next call
+        console.error('Failed to load geographic boundary data:', e);
+        throw e;
+      }
     })();
   }
   return loadingPromise;

@@ -36,7 +36,7 @@ export async function processActivities(
     try {
       await addActivity(activities[i], totals);
     } catch (e) {
-      console.log(e);
+      console.error(`Failed to process activity ${i} (id: ${activities[i]?.id}):`, e);
     }
     if (i % 200 === 199) {
       onProgress(Math.round((i / activities.length) * 100));
